@@ -29,22 +29,56 @@
 */
 
 import {
-	showToolTip, addTooltipListeners, addThisRowListeners, addFormatListeners,
-	folder, hide, show,
-	addScrollListeners, addFolderListeners, addListener
+    showToolTip,
+    addTooltipListeners,
+    addThisRowListeners,
+    addFormatListeners,
+    addDragAndDropListeners,
+    folder,
+    hide,
+    show,
+    addScrollListeners,
+    addFolderListeners,
+    addListener,
 } from "./events";
 import {
-	findObj, changeFormat,
-	stripIds, stripUnwanted, delayedHide, getOffset,
-	getScrollPositions, isIE, benchMark, getZoomFactor, hideToolTip, fadeToolTip, criticalPath, updateFlyingObj, moveToolTip,
+    findObj,
+    changeFormat,
+    stripIds,
+    stripUnwanted,
+    delayedHide,
+    getOffset,
+    getScrollPositions,
+    isIE,
+    benchMark,
+    getZoomFactor,
+    hideToolTip,
+    fadeToolTip,
+    criticalPath,
+    updateFlyingObj,
+    moveToolTip,
 } from "./utils/general_utils";
-import { parseXML, parseXMLString, findXMLNode, getXMLNodeValue, AddXMLTask } from './xml';
+import {
+    parseXML,
+    parseXMLString,
+    findXMLNode,
+    getXMLNodeValue,
+    AddXMLTask,
+} from "./xml";
 import { taskLink, sortTasks, TaskItem, processRows } from "./task";
 import { GanttChart } from "./draw";
 import { parseJSON, parseJSONString, addJSONTask } from "./json";
-import { getMinDate, getMaxDate, parseDateStr, formatDateStr, parseDateFormatStr, getIsoWeek } from "./utils/date_utils";
+import {
+    getMinDate,
+    getMaxDate,
+    parseDateStr,
+    formatDateStr,
+    parseDateFormatStr,
+    getIsoWeek,
+} from "./utils/date_utils";
 
-export let JSGantt; if (!JSGantt) JSGantt = {};
+export let JSGantt;
+if (!JSGantt) JSGantt = {};
 
 JSGantt.isIE = isIE;
 JSGantt.TaskItem = TaskItem;
@@ -88,7 +122,7 @@ JSGantt.parseDateStr = parseDateStr;
 JSGantt.formatDateStr = formatDateStr;
 JSGantt.parseDateFormatStr = parseDateFormatStr;
 
-// XML 
+// XML
 JSGantt.parseXML = parseXML;
 JSGantt.parseXMLString = parseXMLString;
 JSGantt.findXMLNode = findXMLNode;
@@ -109,5 +143,6 @@ JSGantt.addThisRowListeners = addThisRowListeners;
 JSGantt.addFolderListeners = addFolderListeners;
 JSGantt.addFormatListeners = addFormatListeners;
 JSGantt.addScrollListeners = addScrollListeners;
+JSGantt.addDragAndDropListeners = addDragAndDropListeners;
 
 JSGantt.criticalPath = criticalPath;
