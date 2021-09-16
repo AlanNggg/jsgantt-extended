@@ -1434,6 +1434,26 @@ export const GanttChart = function (pDiv, pFormat) {
                         null,
                         null
                     );
+
+                    const vTmpDiv5 = newNode(
+                        this.vTaskList[i].getPlanTaskDiv(),
+                        "div",
+                        null,
+                        "handle left",
+                        null,
+                        null,
+                        null
+                    );
+
+                    const vTmpDiv6 = newNode(
+                        this.vTaskList[i].getPlanTaskDiv(),
+                        "div",
+                        null,
+                        "handle right",
+                        null,
+                        null,
+                        null
+                    );
                 }
             }
 
@@ -1738,7 +1758,7 @@ export const GanttChart = function (pDiv, pFormat) {
                         this.vShowWeekends
                     ) - 30;
             }
-   
+
             this.getChartBody().scrollLeft = vScrollPx;
         }
 
