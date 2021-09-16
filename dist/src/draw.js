@@ -672,6 +672,8 @@ exports.GanttChart = function (pDiv, pFormat) {
                     this.vTaskList[i].getTaskDiv().style.position = "relative";
                     var vTmpDiv3 = draw_utils_1.newNode(this.vTaskList[i].getTaskDiv(), "div", null, "handle left", null, null, null);
                     var vTmpDiv4 = draw_utils_1.newNode(this.vTaskList[i].getTaskDiv(), "div", null, "handle right", null, null, null);
+                    var vTmpDiv5 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
+                    var vTmpDiv6 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
                 }
             }
             // Add Plan Task Info div for tooltip

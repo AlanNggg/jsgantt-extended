@@ -681,6 +681,8 @@ exports.GanttChart = function (pDiv, pFormat) {
                     this.vTaskList[i].getTaskDiv().style.position = "relative";
                     var vTmpDiv3 = draw_utils_1.newNode(this.vTaskList[i].getTaskDiv(), "div", null, "handle left", null, null, null);
                     var vTmpDiv4 = draw_utils_1.newNode(this.vTaskList[i].getTaskDiv(), "div", null, "handle right", null, null, null);
+                    var vTmpDiv5 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
+                    var vTmpDiv6 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
                 }
             }
             // Add Plan Task Info div for tooltip
@@ -1511,6 +1513,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
             return;
         var dx = e.x - xOnStart;
         var dy = e.y - yOnStart;
+        var taskBarContainer = e.target.closest(".gtaskbarcontainer");
         bars.forEach(function (bar) {
             var finaldx = general_utils_1.getSnapPosition(pGanttChart.vFormat, vColWidth, dx);
             if (isResizingLeft) {
@@ -1519,7 +1522,12 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     var originalStartX = bar.startX;
                     console.log(newStartX, originalStartX);
                     task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
-                    bar.setStartX(newStartX);
+                    if (taskBarContainer.classList.contains("gplan")) {
+                        bar.setPlanStartX(newStartX);
+                    }
+                    else {
+                        bar.setStartX(newStartX);
+                    }
                 }
                 else {
                 }
@@ -1530,7 +1538,12 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     var originalEndX = bar.endX;
                     console.log(newEndX, originalEndX);
                     task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), bar.startX, newEndX);
-                    bar.setEndX(newEndX);
+                    if (taskBarContainer.classList.contains("gplan")) {
+                        bar.setPlanEndX(newEndX);
+                    }
+                    else {
+                        bar.setEndX(newEndX);
+                    }
                 }
             }
             else if (isDragging) {
@@ -1542,10 +1555,17 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     }, pObj1);
     exports.addListener("mouseup", function (e) {
         if (barBeingDragged) {
+            var taskBarContainer_1 = e.target.closest(".gtaskbarcontainer");
             bars.forEach(function (bar) {
                 var _a = general_utils_1.computeStartEndDate(bar, bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
-                bar.setStart(newStartDate);
-                bar.setEnd(newEndDate);
+                if (taskBarContainer_1.classList.contains("gplan")) {
+                    bar.setPlanStartX(newStartDate);
+                    bar.setPlanEndX(newEndDate);
+                }
+                else {
+                    bar.setStart(newStartDate);
+                    bar.setEnd(newEndDate);
+                }
                 if (bar.getID() === parentBarId) {
                     pGanttChart.setScrollTo(bar.getEnd());
                 }
