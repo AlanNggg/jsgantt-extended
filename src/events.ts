@@ -364,7 +364,6 @@ export const addTooltipListeners = function (
 
 export const addDragAndDropListeners = function (pGanttChart, pObj1) {
     let isDragging = false;
-    let isPlanTaskBar = false;
     let xOnStart = 0;
     let yOnStart = 0;
     let isResizingLeft = false;
@@ -395,10 +394,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
             const element = e.target.closest(".gtaskbar, .handle");
 
             if (element) {
-                const taskBarContainer = e.target.closest(".gtaskbarcontainer");
-                const isPlanTaskBar =
-                    taskBarContainer.classList.contains("gplan");
-
                 const taskBar = element.closest(".gtaskbar");
 
                 if (element.classList.contains("left")) {
@@ -417,8 +412,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                 parentBarId = +taskBar.id.match(/(\d+)(?!.*\d)/)[0];
                 barBeingDragged = parentBarId;
 
-                console.log(pGanttChart.getList()[0]);
-
                 bars = pGanttChart
                     .getList()
                     .filter(
@@ -428,12 +421,8 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                     )
                     .map((taskItem) => ({
                         ...taskItem,
-                        startX: !isPlanTaskBar
-                            ? taskItem.getStartX()
-                            : taskItem.getPlanStartX(),
-                        endX: !isPlanTaskBar
-                            ? taskItem.getEndX()
-                            : taskItem.getPlanEndX(),
+                        startX: taskItem.getStartX(),
+                        endX: taskItem.getEndX(),
                     }));
             }
         },
@@ -469,23 +458,7 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             bar.endX
                         );
 
-                        if (!isPlanTaskBar) {
-                            updateBarPosition(
-                                bar.getBarDiv(),
-                                bar.getTaskDiv(),
-                                newStartX,
-                                bar.endX
-                            );
-                            bar.setStartX(newStartX);
-                        } else {
-                            updateBarPosition(
-                                bar.getBarDiv(),
-                                bar.getPlanTaskDiv(),
-                                newStartX,
-                                bar.endX
-                            );
-                            bar.setPlanStartX(newStartX);
-                        }
+                        bar.setStartX(newStartX);
                     } else {
                     }
                 } else if (isResizingRight) {
@@ -494,26 +467,14 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                         const originalEndX = bar.endX;
 
                         console.log(newEndX, originalEndX);
+                        updateBarPosition(
+                            bar.getBarDiv(),
+                            bar.getTaskDiv(),
+                            bar.startX,
+                            newEndX
+                        );
 
-                        if (!isPlanTaskBar) {
-                            updateBarPosition(
-                                bar.getBarDiv(),
-                                bar.getTaskDiv(),
-                                bar.startX,
-                                newEndX
-                            );
-
-                            bar.setEndX(newEndX);
-                        } else {
-                            updateBarPosition(
-                                bar.getBarDiv(),
-                                bar.getPlanTaskDiv(),
-                                bar.startX,
-                                newEndX
-                            );
-
-                            bar.setPlanEndX(newEndX);
-                        }
+                        bar.setEndX(newEndX);
                     }
                 } else if (isDragging) {
                     if (bar.getID() === parentBarId) {
@@ -529,38 +490,20 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
         "mouseup",
         function (e) {
             if (barBeingDragged) {
-                const taskBarContainer = e.target.closest(".gtaskbarcontainer");
-
                 bars.forEach((bar) => {
-                    if (!isPlanTaskBar) {
-                        const { newStartDate, newEndDate } =
-                            computeStartEndDate(
-                                bar,
-                                bar.getStartX(),
-                                bar.startX,
-                                bar.getEndX(),
-                                bar.endX,
-                                vColWidth,
-                                pGanttChart.vFormat,
-                                false
-                            );
-                        bar.setStart(newStartDate);
-                        bar.setEnd(newEndDate);
-                    } else {
-                        const { newStartDate, newEndDate } =
-                            computeStartEndDate(
-                                bar,
-                                bar.getPlanStartX(),
-                                bar.startX,
-                                bar.getPlanEndX(),
-                                bar.endX,
-                                vColWidth,
-                                pGanttChart.vFormat,
-                                false
-                            );
-                        bar.setPlanStartX(newStartDate);
-                        bar.setPlanEndX(newEndDate);
-                    }
+                    const { newStartDate, newEndDate } = computeStartEndDate(
+                        bar,
+                        bar.getStartX(),
+                        bar.startX,
+                        bar.getEndX(),
+                        bar.endX,
+                        vColWidth,
+                        pGanttChart.vFormat,
+                        false
+                    );
+
+                    bar.setStart(newStartDate);
+                    bar.setEnd(newEndDate);
 
                     if (bar.getID() === parentBarId) {
                         pGanttChart.setScrollTo(bar.getEnd());

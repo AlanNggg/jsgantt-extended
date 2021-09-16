@@ -539,6 +539,7 @@ exports.GanttChart = function (pDiv, pFormat) {
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellmile", null, vColWidth, null, null, null);
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer", null, 12, vTaskLeftPx_1 + vTaskRightPx - 6);
+                // TODO: reference
                 this.vTaskList[i].setBarDiv(vTmpDiv_1);
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass() + " gtaskbar", null, 12);
                 this.vTaskList[i].setTaskDiv(vTmpDiv2);
@@ -688,11 +689,6 @@ exports.GanttChart = function (pDiv, pFormat) {
                 var _b = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _b.component, callback = _b.callback;
                 vTmpDiv2.appendChild(component);
                 events_1.addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
-                // add handle
-                if (this.vDraggable) {
-                    var vTmpDiv5 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
-                    var vTmpDiv6 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
-                }
             }
         }
         // Include the footer with the days/week/month...
@@ -1461,7 +1457,6 @@ exports.addTooltipListeners = function (pGanttChart, pObj1, pObj2, callback) {
 };
 exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     var isDragging = false;
-    var isPlanTaskBar = false;
     var xOnStart = 0;
     var yOnStart = 0;
     var isResizingLeft = false;
@@ -1487,8 +1482,6 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     exports.addListener("mousedown", function (e) {
         var element = e.target.closest(".gtaskbar, .handle");
         if (element) {
-            var taskBarContainer = e.target.closest(".gtaskbarcontainer");
-            var isPlanTaskBar_1 = taskBarContainer.classList.contains("gplan");
             var taskBar = element.closest(".gtaskbar");
             if (element.classList.contains("left")) {
                 isResizingLeft = true;
@@ -1504,18 +1497,13 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
             yOnStart = e.y;
             parentBarId = +taskBar.id.match(/(\d+)(?!.*\d)/)[0];
             barBeingDragged = parentBarId;
-            console.log(pGanttChart.getList()[0]);
             bars = pGanttChart
                 .getList()
                 .filter(function (taskItem) {
                 return taskItem.getParent() === parentBarId ||
                     taskItem.getID() === parentBarId;
             })
-                .map(function (taskItem) { return (__assign(__assign({}, taskItem), { startX: !isPlanTaskBar_1
-                    ? taskItem.getStartX()
-                    : taskItem.getPlanStartX(), endX: !isPlanTaskBar_1
-                    ? taskItem.getEndX()
-                    : taskItem.getPlanEndX() })); });
+                .map(function (taskItem) { return (__assign(__assign({}, taskItem), { startX: taskItem.getStartX(), endX: taskItem.getEndX() })); });
         }
     }, pObj1);
     exports.addListener("mousemove", function (e) {
@@ -1531,14 +1519,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     var originalStartX = bar.startX;
                     console.log(newStartX, originalStartX);
                     task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
-                    if (!isPlanTaskBar) {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
-                        bar.setStartX(newStartX);
-                    }
-                    else {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getPlanTaskDiv(), newStartX, bar.endX);
-                        bar.setPlanStartX(newStartX);
-                    }
+                    bar.setStartX(newStartX);
                 }
                 else {
                 }
@@ -1548,14 +1529,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     var newEndX = bar.endX + finaldx;
                     var originalEndX = bar.endX;
                     console.log(newEndX, originalEndX);
-                    if (!isPlanTaskBar) {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), bar.startX, newEndX);
-                        bar.setEndX(newEndX);
-                    }
-                    else {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getPlanTaskDiv(), bar.startX, newEndX);
-                        bar.setPlanEndX(newEndX);
-                    }
+                    task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), bar.startX, newEndX);
+                    bar.setEndX(newEndX);
                 }
             }
             else if (isDragging) {
@@ -1567,18 +1542,10 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     }, pObj1);
     exports.addListener("mouseup", function (e) {
         if (barBeingDragged) {
-            var taskBarContainer = e.target.closest(".gtaskbarcontainer");
             bars.forEach(function (bar) {
-                if (!isPlanTaskBar) {
-                    var _a = general_utils_1.computeStartEndDate(bar, bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
-                    bar.setStart(newStartDate);
-                    bar.setEnd(newEndDate);
-                }
-                else {
-                    var _b = general_utils_1.computeStartEndDate(bar, bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
-                    bar.setPlanStartX(newStartDate);
-                    bar.setPlanEndX(newEndDate);
-                }
+                var _a = general_utils_1.computeStartEndDate(bar, bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
+                bar.setStart(newStartDate);
+                bar.setEnd(newEndDate);
                 if (bar.getID() === parentBarId) {
                     pGanttChart.setScrollTo(bar.getEnd());
                 }
