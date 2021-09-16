@@ -364,16 +364,18 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
         });
     }, pObj1);
     exports.addListener("mouseup", function (e) {
+        if (barBeingDragged) {
+            bars.forEach(function (bar) {
+                var _a = general_utils_1.computeStartEndDate(bar, bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
+                bar.setStart(newStartDate);
+                bar.setEnd(newEndDate);
+                if (bar.getID() === parentBarId) {
+                    pGanttChart.setScrollTo(bar.getEnd());
+                }
+            });
+            pGanttChart.Draw();
+        }
         barBeingDragged = null;
-        bars.forEach(function (bar) {
-            var _a = general_utils_1.computeStartEndDate(bar, bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
-            bar.setStart(newStartDate);
-            bar.setEnd(newEndDate);
-            if (bar.getID() === parentBarId) {
-                pGanttChart.setScrollTo(bar.getEnd());
-            }
-        });
-        pGanttChart.Draw();
     }, pObj1);
     exports.addListener("mouseup", function (e) {
         if (isDragging || isResizingLeft || isResizingRight) {

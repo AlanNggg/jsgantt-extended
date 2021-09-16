@@ -489,27 +489,29 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
     addListener(
         "mouseup",
         function (e) {
+            if (barBeingDragged) {
+                bars.forEach((bar) => {
+                    const { newStartDate, newEndDate } = computeStartEndDate(
+                        bar,
+                        bar.getStartX(),
+                        bar.startX,
+                        bar.getEndX(),
+                        bar.endX,
+                        vColWidth,
+                        pGanttChart.vFormat,
+                        false
+                    );
+
+                    bar.setStart(newStartDate);
+                    bar.setEnd(newEndDate);
+
+                    if (bar.getID() === parentBarId) {
+                        pGanttChart.setScrollTo(bar.getEnd());
+                    }
+                });
+                pGanttChart.Draw();
+            }
             barBeingDragged = null;
-            bars.forEach((bar) => {
-                const { newStartDate, newEndDate } = computeStartEndDate(
-                    bar,
-                    bar.getStartX(),
-                    bar.startX,
-                    bar.getEndX(),
-                    bar.endX,
-                    vColWidth,
-                    pGanttChart.vFormat,
-                    false
-                );
-
-                bar.setStart(newStartDate);
-                bar.setEnd(newEndDate);
-
-                if (bar.getID() === parentBarId) {
-                    pGanttChart.setScrollTo(bar.getEnd());
-                }
-            });
-            pGanttChart.Draw();
         },
         pObj1
     );
