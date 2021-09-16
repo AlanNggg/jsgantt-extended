@@ -1011,6 +1011,10 @@ export const GanttChart = function (pDiv, pFormat) {
                     this.vFormat,
                     this.vShowWeekends
                 );
+                this.vTaskList[i].setPlanStartX(vTaskPlanLeftPx);
+                this.vTaskList[i].setPlanEndX(
+                    vTaskPlanLeftPx + vTaskPlanRightPx
+                );
             }
 
             const vID = this.vTaskList[i].getID();
@@ -1310,6 +1314,7 @@ export const GanttChart = function (pDiv, pFormat) {
                             vTaskPlanRightPx,
                             vTaskPlanLeftPx
                         );
+                        this.vTaskList[i].setPlanBarDiv(vTmpPlanDiv);
                         const vTmpPlanDiv2 = newNode(
                             vTmpPlanDiv,
                             "div",
@@ -1463,7 +1468,9 @@ export const GanttChart = function (pDiv, pFormat) {
 
                 // add handle
                 if (this.vDraggable) {
-                    const vTmpDiv5 = newNode(
+                    this.vTaskList[i].getPlanTaskDiv().style.position =
+                        "relative";
+                    const vTmpDiv3 = newNode(
                         this.vTaskList[i].getPlanTaskDiv(),
                         "div",
                         null,
@@ -1473,7 +1480,7 @@ export const GanttChart = function (pDiv, pFormat) {
                         null
                     );
 
-                    const vTmpDiv6 = newNode(
+                    const vTmpDiv4 = newNode(
                         this.vTaskList[i].getPlanTaskDiv(),
                         "div",
                         null,

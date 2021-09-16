@@ -513,6 +513,8 @@ exports.GanttChart = function (pDiv, pFormat) {
             if (curTaskPlanStart && curTaskPlanEnd) {
                 vTaskPlanLeftPx = general_utils_1.getOffset(vMinDate, curTaskPlanStart, vColWidth, this.vFormat, this.vShowWeekends);
                 vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends);
+                this.vTaskList[i].setPlanStartX(vTaskPlanLeftPx);
+                this.vTaskList[i].setPlanEndX(vTaskPlanLeftPx + vTaskPlanRightPx);
             }
             var vID = this.vTaskList[i].getID();
             var vComb = this.vTaskList[i].getParItem() &&
@@ -620,6 +622,7 @@ exports.GanttChart = function (pDiv, pFormat) {
                             vTaskPlanRightPx != vTaskRightPx ||
                             !this.vTaskList[i].getStartVar())) {
                         var vTmpPlanDiv = draw_utils_1.newNode(vTmpDivCell, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer gplan", null, vTaskPlanRightPx, vTaskPlanLeftPx);
+                        this.vTaskList[i].setPlanBarDiv(vTmpPlanDiv);
                         var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass() + " gtaskbar gplan", null, vTaskPlanRightPx);
                         this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
                     }
@@ -681,8 +684,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                 events_1.addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
                 // add handle
                 if (this.vDraggable) {
-                    var vTmpDiv5 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
-                    var vTmpDiv6 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
+                    this.vTaskList[i].getPlanTaskDiv().style.position =
+                        "relative";
+                    var vTmpDiv3 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
+                    var vTmpDiv4 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
                 }
             }
         }

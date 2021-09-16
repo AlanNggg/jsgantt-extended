@@ -117,6 +117,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     var vParItem = null;
     var vCellDiv = null;
     var vBarDiv = null;
+    var vPlanBarDiv = null;
     var vTaskDiv = null;
     var vPlanTaskDiv = null;
     var vListChildRow = null;
@@ -458,6 +459,9 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     this.getBarDiv = function () {
         return vBarDiv;
     };
+    this.getPlanBarDiv = function () {
+        return vPlanBarDiv;
+    };
     this.getTaskDiv = function () {
         return vTaskDiv;
     };
@@ -618,6 +622,11 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
         if (typeof HTMLDivElement !== "function" ||
             pDiv instanceof HTMLDivElement)
             vBarDiv = pDiv;
+    };
+    this.setPlanBarDiv = function (pDiv) {
+        if (typeof HTMLDivElement !== "function" ||
+            pDiv instanceof HTMLDivElement)
+            vPlanBarDiv = pDiv;
     };
     this.setTaskDiv = function (pDiv) {
         if (typeof HTMLDivElement !== "function" ||
@@ -945,6 +954,7 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
 };
 exports.updateBarPosition = function (taskBarContainer, taskBar, startX, endX) {
     var width = endX - startX;
+    console.log(width);
     if (startX) {
         taskBarContainer.style.left = startX + "px";
     }

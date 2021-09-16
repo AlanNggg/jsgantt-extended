@@ -522,6 +522,8 @@ exports.GanttChart = function (pDiv, pFormat) {
             if (curTaskPlanStart && curTaskPlanEnd) {
                 vTaskPlanLeftPx = general_utils_1.getOffset(vMinDate, curTaskPlanStart, vColWidth, this.vFormat, this.vShowWeekends);
                 vTaskPlanRightPx = general_utils_1.getOffset(curTaskPlanStart, curTaskPlanEnd, vColWidth, this.vFormat, this.vShowWeekends);
+                this.vTaskList[i].setPlanStartX(vTaskPlanLeftPx);
+                this.vTaskList[i].setPlanEndX(vTaskPlanLeftPx + vTaskPlanRightPx);
             }
             var vID = this.vTaskList[i].getID();
             var vComb = this.vTaskList[i].getParItem() &&
@@ -629,6 +631,7 @@ exports.GanttChart = function (pDiv, pFormat) {
                             vTaskPlanRightPx != vTaskRightPx ||
                             !this.vTaskList[i].getStartVar())) {
                         var vTmpPlanDiv = draw_utils_1.newNode(vTmpDivCell, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer gplan", null, vTaskPlanRightPx, vTaskPlanLeftPx);
+                        this.vTaskList[i].setPlanBarDiv(vTmpPlanDiv);
                         var vTmpPlanDiv2 = draw_utils_1.newNode(vTmpPlanDiv, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass() + " gtaskbar gplan", null, vTaskPlanRightPx);
                         this.vTaskList[i].setPlanTaskDiv(vTmpPlanDiv2);
                     }
@@ -690,8 +693,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                 events_1.addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
                 // add handle
                 if (this.vDraggable) {
-                    var vTmpDiv5 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
-                    var vTmpDiv6 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
+                    this.vTaskList[i].getPlanTaskDiv().style.position =
+                        "relative";
+                    var vTmpDiv3 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
+                    var vTmpDiv4 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
                 }
             }
         }
@@ -1487,9 +1492,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     exports.addListener("mousedown", function (e) {
         var element = e.target.closest(".gtaskbar, .handle");
         if (element) {
-            var taskBarContainer = e.target.closest(".gtaskbarcontainer");
-            var isPlanTaskBar_1 = taskBarContainer.classList.contains("gplan");
-            console.log("isPlanTaskBar", isPlanTaskBar_1);
+            isPlanTaskBar = !!e.target.closest(".gplan");
             var taskBar = element.closest(".gtaskbar");
             if (element.classList.contains("left")) {
                 isResizingLeft = true;
@@ -1512,11 +1515,12 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                 return taskItem.getParent() === parentBarId ||
                     taskItem.getID() === parentBarId;
             })
-                .map(function (taskItem) { return (__assign(__assign({}, taskItem), { startX: !isPlanTaskBar_1
+                .map(function (taskItem) { return (__assign(__assign({}, taskItem), { startX: !isPlanTaskBar
                     ? taskItem.getStartX()
-                    : taskItem.getPlanStartX(), endX: !isPlanTaskBar_1
+                    : taskItem.getPlanStartX(), endX: !isPlanTaskBar
                     ? taskItem.getEndX()
                     : taskItem.getPlanEndX() })); });
+            console.log("bars ", bars);
         }
     }, pObj1);
     exports.addListener("mousemove", function (e) {
@@ -1536,7 +1540,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                         bar.setStartX(newStartX);
                     }
                     else {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getPlanTaskDiv(), newStartX, bar.endX);
+                        task_1.updateBarPosition(bar.getPlanBarDiv(), bar.getPlanTaskDiv(), newStartX, bar.endX);
                         bar.setPlanStartX(newStartX);
                     }
                 }
@@ -1553,7 +1557,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                         bar.setEndX(newEndX);
                     }
                     else {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getPlanTaskDiv(), bar.startX, newEndX);
+                        console.log("bar.getPlanTaskDiv()", bar.getPlanTaskDiv());
+                        task_1.updateBarPosition(bar.getPlanBarDiv(), bar.getPlanTaskDiv(), bar.startX, newEndX);
                         bar.setPlanEndX(newEndX);
                     }
                 }
@@ -1566,26 +1571,39 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
         });
     }, pObj1);
     exports.addListener("mouseup", function (e) {
-        if (barBeingDragged) {
-            var taskBarContainer = e.target.closest(".gtaskbarcontainer");
+        barBeingDragged = null;
+        if (isResizingLeft || isResizingRight) {
             bars.forEach(function (bar) {
                 if (!isPlanTaskBar) {
-                    var _a = general_utils_1.computeStartEndDate(bar, bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
+                    console.log();
+                    var _a = general_utils_1.computeStartEndDate(bar.getStart(), bar.getEnd(), bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
                     bar.setStart(newStartDate);
                     bar.setEnd(newEndDate);
+                    if (bar.getID() === parentBarId) {
+                        if (isResizingLeft) {
+                            pGanttChart.setScrollTo(bar.getStart());
+                        }
+                        else if (isResizingRight) {
+                            pGanttChart.setScrollTo(bar.getEnd());
+                        }
+                    }
                 }
                 else {
-                    var _b = general_utils_1.computeStartEndDate(bar, bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
+                    var _b = general_utils_1.computeStartEndDate(bar.getPlanStart(), bar.getPlanEnd(), bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
                     bar.setPlanStart(newStartDate);
                     bar.setPlanEnd(newEndDate);
-                }
-                if (bar.getID() === parentBarId) {
-                    pGanttChart.setScrollTo(bar.getEnd());
+                    if (bar.getID() === parentBarId) {
+                        if (isResizingLeft) {
+                            pGanttChart.setScrollTo(bar.getPlanStart());
+                        }
+                        else if (isResizingRight) {
+                            pGanttChart.setScrollTo(bar.getPlanEnd());
+                        }
+                    }
                 }
             });
             pGanttChart.Draw();
         }
-        barBeingDragged = null;
     }, pObj1);
     exports.addListener("mouseup", function (e) {
         if (isDragging || isResizingLeft || isResizingRight) {
@@ -3911,6 +3929,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     var vParItem = null;
     var vCellDiv = null;
     var vBarDiv = null;
+    var vPlanBarDiv = null;
     var vTaskDiv = null;
     var vPlanTaskDiv = null;
     var vListChildRow = null;
@@ -4252,6 +4271,9 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     this.getBarDiv = function () {
         return vBarDiv;
     };
+    this.getPlanBarDiv = function () {
+        return vPlanBarDiv;
+    };
     this.getTaskDiv = function () {
         return vTaskDiv;
     };
@@ -4412,6 +4434,11 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
         if (typeof HTMLDivElement !== "function" ||
             pDiv instanceof HTMLDivElement)
             vBarDiv = pDiv;
+    };
+    this.setPlanBarDiv = function (pDiv) {
+        if (typeof HTMLDivElement !== "function" ||
+            pDiv instanceof HTMLDivElement)
+            vPlanBarDiv = pDiv;
     };
     this.setTaskDiv = function (pDiv) {
         if (typeof HTMLDivElement !== "function" ||
@@ -4739,6 +4766,7 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
 };
 exports.updateBarPosition = function (taskBarContainer, taskBar, startX, endX) {
     var width = endX - startX;
+    console.log(width);
     if (startX) {
         taskBarContainer.style.left = startX + "px";
     }
@@ -5193,7 +5221,6 @@ exports.CalcTaskXY = function () {
         }
         else
             vParDiv = vList[i].getChildRow();
-        console.log("vParDiv ", vParDiv);
         if (vBarDiv) {
             vList[i].setStartX(vBarDiv.offsetLeft + 1);
             vList[i].setStartY(vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1);
@@ -5402,48 +5429,48 @@ exports.calculateCurrentDateOffset = function (curTaskStart, curTaskEnd) {
     var tmpTaskEnd = Date.UTC(curTaskEnd.getFullYear(), curTaskEnd.getMonth(), curTaskEnd.getDate(), curTaskEnd.getHours(), 0, 0);
     return tmpTaskEnd - tmpTaskStart;
 };
-exports.computeStartEndDate = function (bar, newStartX, originalStartX, newEndX, originalEndX, pColWidth, pFormat, pShowWeekends) {
-    var xInUnits = newStartX - originalStartX;
+exports.computeStartEndDate = function (curStart, curEnd, newStartX, curStartX, newEndX, curEndX, pColWidth, pFormat, pShowWeekends) {
+    var xInUnits = newStartX - curStartX;
     var newStartDate;
-    var x2InUnits = newEndX - originalEndX;
+    var x2InUnits = newEndX - curEndX;
     var newEndDate;
-    console.log(newStartX, originalStartX, newEndX, originalEndX);
+    console.log(newStartX, curStartX, newEndX, curEndX);
     if (pFormat == "day") {
         // by day
         if (!pShowWeekends) {
         }
         xInUnits /= pColWidth + DAY_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + DAY_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits, "day");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits, "day");
+        newStartDate = date_utils_1.add(curStart, xInUnits, "day");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits, "day");
     }
     else if (pFormat == "week") {
         // by day
         xInUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits * 7, "day");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits * 7, "day");
+        newStartDate = date_utils_1.add(curStart, xInUnits * 7, "day");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits * 7, "day");
     }
     else if (pFormat == "month") {
         // by day
         xInUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits * 30, "day");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits * 30, "day");
+        newStartDate = date_utils_1.add(curStart, xInUnits * 30, "day");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits * 30, "day");
     }
     else if (pFormat == "quarter") {
         // by month
         xInUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits * 3, "month");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits * 3, "month");
+        newStartDate = date_utils_1.add(curStart, xInUnits * 3, "month");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits * 3, "month");
     }
     else if (pFormat == "hour") {
         // by minutes
         xInUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits, "minute");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits, "minute");
+        newStartDate = date_utils_1.add(curStart, xInUnits, "minute");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits, "minute");
     }
     return { newStartDate: newStartDate, newEndDate: newEndDate };
 };

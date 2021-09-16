@@ -189,21 +189,22 @@ export const calculateCurrentDateOffset = function (curTaskStart, curTaskEnd) {
 };
 
 export const computeStartEndDate = function (
-    bar,
+    curStart,
+    curEnd,
     newStartX,
-    originalStartX,
+    curStartX,
     newEndX,
-    originalEndX,
+    curEndX,
     pColWidth,
     pFormat,
     pShowWeekends
 ) {
-    let xInUnits = newStartX - originalStartX;
+    let xInUnits = newStartX - curStartX;
     let newStartDate;
-    let x2InUnits = newEndX - originalEndX;
+    let x2InUnits = newEndX - curEndX;
     let newEndDate;
 
-    console.log(newStartX, originalStartX, newEndX, originalEndX);
+    console.log(newStartX, curStartX, newEndX, curEndX);
     if (pFormat == "day") {
         // by day
         if (!pShowWeekends) {
@@ -211,40 +212,40 @@ export const computeStartEndDate = function (
         xInUnits /= pColWidth + DAY_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + DAY_CELL_MARGIN_WIDTH;
 
-        newStartDate = add(bar.getStart(), xInUnits, "day");
-        newEndDate = add(bar.getEnd(), x2InUnits, "day");
+        newStartDate = add(curStart, xInUnits, "day");
+        newEndDate = add(curEnd, x2InUnits, "day");
     } else if (pFormat == "week") {
         // by day
         xInUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
 
         x2InUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
 
-        newStartDate = add(bar.getStart(), xInUnits * 7, "day");
-        newEndDate = add(bar.getEnd(), x2InUnits * 7, "day");
+        newStartDate = add(curStart, xInUnits * 7, "day");
+        newEndDate = add(curEnd, x2InUnits * 7, "day");
     } else if (pFormat == "month") {
         // by day
         xInUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
 
         x2InUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
 
-        newStartDate = add(bar.getStart(), xInUnits * 30, "day");
-        newEndDate = add(bar.getEnd(), x2InUnits * 30, "day");
+        newStartDate = add(curStart, xInUnits * 30, "day");
+        newEndDate = add(curEnd, x2InUnits * 30, "day");
     } else if (pFormat == "quarter") {
         // by month
         xInUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
 
         x2InUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
 
-        newStartDate = add(bar.getStart(), xInUnits * 3, "month");
-        newEndDate = add(bar.getEnd(), x2InUnits * 3, "month");
+        newStartDate = add(curStart, xInUnits * 3, "month");
+        newEndDate = add(curEnd, x2InUnits * 3, "month");
     } else if (pFormat == "hour") {
         // by minutes
         xInUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
 
         x2InUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
 
-        newStartDate = add(bar.getStart(), xInUnits, "minute");
-        newEndDate = add(bar.getEnd(), x2InUnits, "minute");
+        newStartDate = add(curStart, xInUnits, "minute");
+        newEndDate = add(curEnd, x2InUnits, "minute");
     }
 
     return { newStartDate, newEndDate };

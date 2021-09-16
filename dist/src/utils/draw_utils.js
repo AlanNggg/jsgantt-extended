@@ -111,7 +111,6 @@ exports.CalcTaskXY = function () {
         }
         else
             vParDiv = vList[i].getChildRow();
-        console.log("vParDiv ", vParDiv);
         if (vBarDiv) {
             vList[i].setStartX(vBarDiv.offsetLeft + 1);
             vList[i].setStartY(vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1);

@@ -306,9 +306,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     exports.addListener("mousedown", function (e) {
         var element = e.target.closest(".gtaskbar, .handle");
         if (element) {
-            var taskBarContainer = e.target.closest(".gtaskbarcontainer");
-            var isPlanTaskBar_1 = taskBarContainer.classList.contains("gplan");
-            console.log("isPlanTaskBar", isPlanTaskBar_1);
+            isPlanTaskBar = !!e.target.closest(".gplan");
             var taskBar = element.closest(".gtaskbar");
             if (element.classList.contains("left")) {
                 isResizingLeft = true;
@@ -331,11 +329,12 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                 return taskItem.getParent() === parentBarId ||
                     taskItem.getID() === parentBarId;
             })
-                .map(function (taskItem) { return (__assign(__assign({}, taskItem), { startX: !isPlanTaskBar_1
+                .map(function (taskItem) { return (__assign(__assign({}, taskItem), { startX: !isPlanTaskBar
                     ? taskItem.getStartX()
-                    : taskItem.getPlanStartX(), endX: !isPlanTaskBar_1
+                    : taskItem.getPlanStartX(), endX: !isPlanTaskBar
                     ? taskItem.getEndX()
                     : taskItem.getPlanEndX() })); });
+            console.log("bars ", bars);
         }
     }, pObj1);
     exports.addListener("mousemove", function (e) {
@@ -355,7 +354,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                         bar.setStartX(newStartX);
                     }
                     else {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getPlanTaskDiv(), newStartX, bar.endX);
+                        task_1.updateBarPosition(bar.getPlanBarDiv(), bar.getPlanTaskDiv(), newStartX, bar.endX);
                         bar.setPlanStartX(newStartX);
                     }
                 }
@@ -372,7 +371,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                         bar.setEndX(newEndX);
                     }
                     else {
-                        task_1.updateBarPosition(bar.getBarDiv(), bar.getPlanTaskDiv(), bar.startX, newEndX);
+                        console.log("bar.getPlanTaskDiv()", bar.getPlanTaskDiv());
+                        task_1.updateBarPosition(bar.getPlanBarDiv(), bar.getPlanTaskDiv(), bar.startX, newEndX);
                         bar.setPlanEndX(newEndX);
                     }
                 }
@@ -385,26 +385,39 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
         });
     }, pObj1);
     exports.addListener("mouseup", function (e) {
-        if (barBeingDragged) {
-            var taskBarContainer = e.target.closest(".gtaskbarcontainer");
+        barBeingDragged = null;
+        if (isResizingLeft || isResizingRight) {
             bars.forEach(function (bar) {
                 if (!isPlanTaskBar) {
-                    var _a = general_utils_1.computeStartEndDate(bar, bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
+                    console.log();
+                    var _a = general_utils_1.computeStartEndDate(bar.getStart(), bar.getEnd(), bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
                     bar.setStart(newStartDate);
                     bar.setEnd(newEndDate);
+                    if (bar.getID() === parentBarId) {
+                        if (isResizingLeft) {
+                            pGanttChart.setScrollTo(bar.getStart());
+                        }
+                        else if (isResizingRight) {
+                            pGanttChart.setScrollTo(bar.getEnd());
+                        }
+                    }
                 }
                 else {
-                    var _b = general_utils_1.computeStartEndDate(bar, bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
+                    var _b = general_utils_1.computeStartEndDate(bar.getPlanStart(), bar.getPlanEnd(), bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
                     bar.setPlanStart(newStartDate);
                     bar.setPlanEnd(newEndDate);
-                }
-                if (bar.getID() === parentBarId) {
-                    pGanttChart.setScrollTo(bar.getEnd());
+                    if (bar.getID() === parentBarId) {
+                        if (isResizingLeft) {
+                            pGanttChart.setScrollTo(bar.getPlanStart());
+                        }
+                        else if (isResizingRight) {
+                            pGanttChart.setScrollTo(bar.getPlanEnd());
+                        }
+                    }
                 }
             });
             pGanttChart.Draw();
         }
-        barBeingDragged = null;
     }, pObj1);
     exports.addListener("mouseup", function (e) {
         if (isDragging || isResizingLeft || isResizingRight) {

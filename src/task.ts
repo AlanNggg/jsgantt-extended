@@ -155,6 +155,7 @@ export const TaskItem = function (
     let vParItem = null;
     let vCellDiv = null;
     let vBarDiv = null;
+    let vPlanBarDiv = null;
     let vTaskDiv = null;
     let vPlanTaskDiv = null;
     let vListChildRow = null;
@@ -500,6 +501,9 @@ export const TaskItem = function (
     this.getBarDiv = function () {
         return vBarDiv;
     };
+    this.getPlanBarDiv = function () {
+        return vPlanBarDiv;
+    };
     this.getTaskDiv = function () {
         return vTaskDiv;
     };
@@ -651,6 +655,13 @@ export const TaskItem = function (
             pDiv instanceof HTMLDivElement
         )
             vBarDiv = pDiv;
+    };
+    this.setPlanBarDiv = function (pDiv) {
+        if (
+            typeof HTMLDivElement !== "function" ||
+            pDiv instanceof HTMLDivElement
+        )
+            vPlanBarDiv = pDiv;
     };
     this.setTaskDiv = function (pDiv) {
         if (
@@ -1115,6 +1126,7 @@ export const processRows = function (
 
 export const updateBarPosition = (taskBarContainer, taskBar, startX, endX) => {
     const width = endX - startX;
+    console.log(width);
     if (startX) {
         taskBarContainer.style.left = startX + "px";
     }

@@ -141,48 +141,48 @@ exports.calculateCurrentDateOffset = function (curTaskStart, curTaskEnd) {
     var tmpTaskEnd = Date.UTC(curTaskEnd.getFullYear(), curTaskEnd.getMonth(), curTaskEnd.getDate(), curTaskEnd.getHours(), 0, 0);
     return tmpTaskEnd - tmpTaskStart;
 };
-exports.computeStartEndDate = function (bar, newStartX, originalStartX, newEndX, originalEndX, pColWidth, pFormat, pShowWeekends) {
-    var xInUnits = newStartX - originalStartX;
+exports.computeStartEndDate = function (curStart, curEnd, newStartX, curStartX, newEndX, curEndX, pColWidth, pFormat, pShowWeekends) {
+    var xInUnits = newStartX - curStartX;
     var newStartDate;
-    var x2InUnits = newEndX - originalEndX;
+    var x2InUnits = newEndX - curEndX;
     var newEndDate;
-    console.log(newStartX, originalStartX, newEndX, originalEndX);
+    console.log(newStartX, curStartX, newEndX, curEndX);
     if (pFormat == "day") {
         // by day
         if (!pShowWeekends) {
         }
         xInUnits /= pColWidth + DAY_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + DAY_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits, "day");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits, "day");
+        newStartDate = date_utils_1.add(curStart, xInUnits, "day");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits, "day");
     }
     else if (pFormat == "week") {
         // by day
         xInUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits * 7, "day");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits * 7, "day");
+        newStartDate = date_utils_1.add(curStart, xInUnits * 7, "day");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits * 7, "day");
     }
     else if (pFormat == "month") {
         // by day
         xInUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits * 30, "day");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits * 30, "day");
+        newStartDate = date_utils_1.add(curStart, xInUnits * 30, "day");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits * 30, "day");
     }
     else if (pFormat == "quarter") {
         // by month
         xInUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits * 3, "month");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits * 3, "month");
+        newStartDate = date_utils_1.add(curStart, xInUnits * 3, "month");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits * 3, "month");
     }
     else if (pFormat == "hour") {
         // by minutes
         xInUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
         x2InUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
-        newStartDate = date_utils_1.add(bar.getStart(), xInUnits, "minute");
-        newEndDate = date_utils_1.add(bar.getEnd(), x2InUnits, "minute");
+        newStartDate = date_utils_1.add(curStart, xInUnits, "minute");
+        newEndDate = date_utils_1.add(curEnd, x2InUnits, "minute");
     }
     return { newStartDate: newStartDate, newEndDate: newEndDate };
 };
