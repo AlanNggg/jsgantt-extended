@@ -437,6 +437,8 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
             const dx = e.x - xOnStart;
             const dy = e.y - yOnStart;
 
+            const taskBarContainer = e.target.closest(".gtaskbarcontainer");
+
             bars.forEach((bar) => {
                 let finaldx = getSnapPosition(
                     pGanttChart.vFormat,
@@ -458,7 +460,11 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             bar.endX
                         );
 
-                        bar.setStartX(newStartX);
+                        if (taskBarContainer.classList.contains("gplan")) {
+                            bar.setPlanStartX(newStartX);
+                        } else {
+                            bar.setStartX(newStartX);
+                        }
                     } else {
                     }
                 } else if (isResizingRight) {
@@ -474,7 +480,11 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             newEndX
                         );
 
-                        bar.setEndX(newEndX);
+                        if (taskBarContainer.classList.contains("gplan")) {
+                            bar.setPlanEndX(newEndX);
+                        } else {
+                            bar.setEndX(newEndX);
+                        }
                     }
                 } else if (isDragging) {
                     if (bar.getID() === parentBarId) {
@@ -490,6 +500,8 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
         "mouseup",
         function (e) {
             if (barBeingDragged) {
+                const taskBarContainer = e.target.closest(".gtaskbarcontainer");
+
                 bars.forEach((bar) => {
                     const { newStartDate, newEndDate } = computeStartEndDate(
                         bar,
@@ -502,8 +514,13 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                         false
                     );
 
-                    bar.setStart(newStartDate);
-                    bar.setEnd(newEndDate);
+                    if (taskBarContainer.classList.contains("gplan")) {
+                        bar.setPlanStartX(newStartDate);
+                        bar.setPlanEndX(newEndDate);
+                    } else {
+                        bar.setStart(newStartDate);
+                        bar.setEnd(newEndDate);
+                    }
 
                     if (bar.getID() === parentBarId) {
                         pGanttChart.setScrollTo(bar.getEnd());
