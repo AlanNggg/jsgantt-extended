@@ -205,6 +205,7 @@ export const computeStartEndDate = function (
 
     console.log(newStartX, originalStartX, newEndX, originalEndX);
     if (pFormat == "day") {
+        // by day
         if (!pShowWeekends) {
         }
         xInUnits /= pColWidth + DAY_CELL_MARGIN_WIDTH;
@@ -213,6 +214,7 @@ export const computeStartEndDate = function (
         newStartDate = add(bar.getStart(), xInUnits, "day");
         newEndDate = add(bar.getEnd(), x2InUnits, "day");
     } else if (pFormat == "week") {
+        // by day
         xInUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
 
         x2InUnits /= pColWidth + WEEK_CELL_MARGIN_WIDTH;
@@ -220,8 +222,29 @@ export const computeStartEndDate = function (
         newStartDate = add(bar.getStart(), xInUnits * 7, "day");
         newEndDate = add(bar.getEnd(), x2InUnits * 7, "day");
     } else if (pFormat == "month") {
+        // by day
+        xInUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
+
+        x2InUnits /= pColWidth + MONTH_CELL_MARGIN_WIDTH;
+
+        newStartDate = add(bar.getStart(), xInUnits * 30, "day");
+        newEndDate = add(bar.getEnd(), x2InUnits * 30, "day");
     } else if (pFormat == "quarter") {
+        // by month
+        xInUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
+
+        x2InUnits /= pColWidth + QUARTER_CELL_MARGIN_WIDTH;
+
+        newStartDate = add(bar.getStart(), xInUnits * 3, "month");
+        newEndDate = add(bar.getEnd(), x2InUnits * 3, "month");
     } else if (pFormat == "hour") {
+        // by minutes
+        xInUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
+
+        x2InUnits /= pColWidth + HOUR_CELL_MARGIN_WIDTH;
+
+        newStartDate = add(bar.getStart(), xInUnits, "minute");
+        newEndDate = add(bar.getEnd(), x2InUnits, "minute");
     }
 
     return { newStartDate, newEndDate };
@@ -637,34 +660,51 @@ export const getSnapPosition = function (vFormat, vColWidth, dx) {
         position;
 
     if (vFormat == "day") {
+        // by day
         rem = dx % (vColWidth + DAY_CELL_MARGIN_WIDTH);
         position =
             odx -
             rem +
-            (rem < vColWidth / 2
+            (rem < (vColWidth + DAY_CELL_MARGIN_WIDTH) / 2
                 ? 0
                 : Math.ceil(vColWidth + DAY_CELL_MARGIN_WIDTH));
         console.log("position ", vColWidth + DAY_CELL_MARGIN_WIDTH, position);
     } else if (vFormat == "week") {
-        rem = dx % (vColWidth / 7);
+        // by day
+        rem = dx % ((vColWidth + WEEK_CELL_MARGIN_WIDTH) / 7);
         position =
             odx -
             rem +
-            (rem < vColWidth / 14
+            (rem < (vColWidth + WEEK_CELL_MARGIN_WIDTH) / 14
                 ? 0
                 : Math.ceil((vColWidth + WEEK_CELL_MARGIN_WIDTH) / 7));
     } else if (vFormat == "month") {
-        rem = dx % (vColWidth / 30);
+        // by day
+        rem = dx % ((vColWidth + MONTH_CELL_MARGIN_WIDTH) / 30);
         position =
             odx -
             rem +
-            (rem < vColWidth / 60
+            (rem < (vColWidth + MONTH_CELL_MARGIN_WIDTH) / 60
                 ? 0
                 : Math.ceil((vColWidth + MONTH_CELL_MARGIN_WIDTH) / 30));
     } else if (vFormat == "quarter") {
-        // TODO: add drag for quarter
+        // by month
+        rem = dx % ((vColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3);
+        position =
+            odx -
+            rem +
+            (rem < (vColWidth + QUARTER_CELL_MARGIN_WIDTH) / 6
+                ? 0
+                : Math.ceil((vColWidth + QUARTER_CELL_MARGIN_WIDTH) / 3));
     } else if (vFormat == "hour") {
-        // TODO: add drag for hour
+        // by minutes
+        rem = dx % ((vColWidth + HOUR_CELL_MARGIN_WIDTH) / 60);
+        position =
+            odx -
+            rem +
+            (rem < (vColWidth + HOUR_CELL_MARGIN_WIDTH) / 120
+                ? 0
+                : Math.ceil((vColWidth + HOUR_CELL_MARGIN_WIDTH) / 60));
     }
 
     console.log(dx, rem);
