@@ -112,6 +112,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     var vSortIdx = 0;
     var vToDelete = false;
     var x1, y1, x2, y2;
+    var x1p, y1p, x2p, y2p;
     var vNotes;
     var vParItem = null;
     var vCellDiv = null;
@@ -433,6 +434,18 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     this.getEndY = function () {
         return y2;
     };
+    this.getPlanStartX = function () {
+        return x1p;
+    };
+    this.getPlanStartY = function () {
+        return y1p;
+    };
+    this.getPlanEndX = function () {
+        return x2p;
+    };
+    this.getPlanEndY = function () {
+        return y2p;
+    };
     this.getVisible = function () {
         return vVisible;
     };
@@ -549,6 +562,18 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     };
     this.setEndY = function (pY) {
         y2 = parseInt(document.createTextNode(pY).data);
+    };
+    this.setPlanStartX = function (pX) {
+        x1p = parseInt(document.createTextNode(pX).data);
+    };
+    this.setPlanStartY = function (pY) {
+        y1p = parseInt(document.createTextNode(pY).data);
+    };
+    this.setPlanEndX = function (pX) {
+        x2p = parseInt(document.createTextNode(pX).data);
+    };
+    this.setPlanEndY = function (pY) {
+        y2p = parseInt(document.createTextNode(pY).data);
     };
     this.setOpen = function (pOpen) {
         vOpen = parseInt(document.createTextNode(pOpen).data);

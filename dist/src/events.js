@@ -308,6 +308,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
         if (element) {
             var taskBarContainer = e.target.closest(".gtaskbarcontainer");
             var isPlanTaskBar_1 = taskBarContainer.classList.contains("gplan");
+            console.log("isPlanTaskBar", isPlanTaskBar_1);
             var taskBar = element.closest(".gtaskbar");
             if (element.classList.contains("left")) {
                 isResizingLeft = true;
@@ -349,7 +350,6 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     var newStartX = bar.startX + finaldx;
                     var originalStartX = bar.startX;
                     console.log(newStartX, originalStartX);
-                    task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
                     if (!isPlanTaskBar) {
                         task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
                         bar.setStartX(newStartX);
@@ -395,8 +395,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                 }
                 else {
                     var _b = general_utils_1.computeStartEndDate(bar, bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
-                    bar.setPlanStartX(newStartDate);
-                    bar.setPlanEndX(newEndDate);
+                    bar.setPlanStart(newStartDate);
+                    bar.setPlanEnd(newEndDate);
                 }
                 if (bar.getID() === parentBarId) {
                     pGanttChart.setScrollTo(bar.getEnd());
@@ -409,7 +409,12 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     exports.addListener("mouseup", function (e) {
         if (isDragging || isResizingLeft || isResizingRight) {
             bars.forEach(function (bar) {
-                return bar.getTaskDiv().classList.remove("active");
+                if (!isPlanTaskBar) {
+                    bar.getTaskDiv().classList.remove("active");
+                }
+                else {
+                    bar.getPlanTaskDiv().classList.remove("active");
+                }
             });
         }
         isDragging = false;

@@ -399,6 +399,7 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                 const isPlanTaskBar =
                     taskBarContainer.classList.contains("gplan");
 
+                console.log("isPlanTaskBar", isPlanTaskBar);
                 const taskBar = element.closest(".gtaskbar");
 
                 if (element.classList.contains("left")) {
@@ -461,13 +462,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                         const originalStartX = bar.startX;
 
                         console.log(newStartX, originalStartX);
-
-                        updateBarPosition(
-                            bar.getBarDiv(),
-                            bar.getTaskDiv(),
-                            newStartX,
-                            bar.endX
-                        );
 
                         if (!isPlanTaskBar) {
                             updateBarPosition(
@@ -558,8 +552,8 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 pGanttChart.vFormat,
                                 false
                             );
-                        bar.setPlanStartX(newStartDate);
-                        bar.setPlanEndX(newEndDate);
+                        bar.setPlanStart(newStartDate);
+                        bar.setPlanEnd(newEndDate);
                     }
 
                     if (bar.getID() === parentBarId) {
@@ -577,9 +571,13 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
         "mouseup",
         function (e) {
             if (isDragging || isResizingLeft || isResizingRight) {
-                bars.forEach((bar) =>
-                    bar.getTaskDiv().classList.remove("active")
-                );
+                bars.forEach((bar) => {
+                    if (!isPlanTaskBar) {
+                        bar.getTaskDiv().classList.remove("active");
+                    } else {
+                        bar.getPlanTaskDiv().classList.remove("active");
+                    }
+                });
             }
 
             isDragging = false;

@@ -1489,6 +1489,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
         if (element) {
             var taskBarContainer = e.target.closest(".gtaskbarcontainer");
             var isPlanTaskBar_1 = taskBarContainer.classList.contains("gplan");
+            console.log("isPlanTaskBar", isPlanTaskBar_1);
             var taskBar = element.closest(".gtaskbar");
             if (element.classList.contains("left")) {
                 isResizingLeft = true;
@@ -1530,7 +1531,6 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     var newStartX = bar.startX + finaldx;
                     var originalStartX = bar.startX;
                     console.log(newStartX, originalStartX);
-                    task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
                     if (!isPlanTaskBar) {
                         task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
                         bar.setStartX(newStartX);
@@ -1576,8 +1576,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                 }
                 else {
                     var _b = general_utils_1.computeStartEndDate(bar, bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
-                    bar.setPlanStartX(newStartDate);
-                    bar.setPlanEndX(newEndDate);
+                    bar.setPlanStart(newStartDate);
+                    bar.setPlanEnd(newEndDate);
                 }
                 if (bar.getID() === parentBarId) {
                     pGanttChart.setScrollTo(bar.getEnd());
@@ -1590,7 +1590,12 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
     exports.addListener("mouseup", function (e) {
         if (isDragging || isResizingLeft || isResizingRight) {
             bars.forEach(function (bar) {
-                return bar.getTaskDiv().classList.remove("active");
+                if (!isPlanTaskBar) {
+                    bar.getTaskDiv().classList.remove("active");
+                }
+                else {
+                    bar.getPlanTaskDiv().classList.remove("active");
+                }
             });
         }
         isDragging = false;
@@ -3901,6 +3906,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     var vSortIdx = 0;
     var vToDelete = false;
     var x1, y1, x2, y2;
+    var x1p, y1p, x2p, y2p;
     var vNotes;
     var vParItem = null;
     var vCellDiv = null;
@@ -4222,6 +4228,18 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     this.getEndY = function () {
         return y2;
     };
+    this.getPlanStartX = function () {
+        return x1p;
+    };
+    this.getPlanStartY = function () {
+        return y1p;
+    };
+    this.getPlanEndX = function () {
+        return x2p;
+    };
+    this.getPlanEndY = function () {
+        return y2p;
+    };
     this.getVisible = function () {
         return vVisible;
     };
@@ -4338,6 +4356,18 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     };
     this.setEndY = function (pY) {
         y2 = parseInt(document.createTextNode(pY).data);
+    };
+    this.setPlanStartX = function (pX) {
+        x1p = parseInt(document.createTextNode(pX).data);
+    };
+    this.setPlanStartY = function (pY) {
+        y1p = parseInt(document.createTextNode(pY).data);
+    };
+    this.setPlanEndX = function (pX) {
+        x2p = parseInt(document.createTextNode(pX).data);
+    };
+    this.setPlanEndY = function (pY) {
+        y2p = parseInt(document.createTextNode(pY).data);
     };
     this.setOpen = function (pOpen) {
         vOpen = parseInt(document.createTextNode(pOpen).data);
@@ -5055,7 +5085,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.drawSelector = exports.sLine = exports.CalcTaskXY = exports.getArrayLocationByID = exports.newNode = exports.makeInput = void 0;
 var events_1 = require("../events");
 exports.makeInput = function (formattedValue, editable, type, value, choices) {
-    if (type === void 0) { type = 'text'; }
+    if (type === void 0) { type = "text"; }
     if (value === void 0) { value = null; }
     if (choices === void 0) { choices = null; }
     if (!value) {
@@ -5063,11 +5093,15 @@ exports.makeInput = function (formattedValue, editable, type, value, choices) {
     }
     if (editable) {
         switch (type) {
-            case 'date':
+            case "date":
                 // Take timezone into account before converting to ISO String
-                value = value ? new Date(value.getTime() - (value.getTimezoneOffset() * 60000)).toISOString().split('T')[0] : '';
+                value = value
+                    ? new Date(value.getTime() - value.getTimezoneOffset() * 60000)
+                        .toISOString()
+                        .split("T")[0]
+                    : "";
                 return "<input class=\"gantt-inputtable\" type=\"date\" value=\"" + value + "\">";
-            case 'resource':
+            case "resource":
                 if (choices) {
                     var found = choices.filter(function (c) { return c.id == value || c.name == value; });
                     if (found && found.length > 0) {
@@ -5076,15 +5110,21 @@ exports.makeInput = function (formattedValue, editable, type, value, choices) {
                     else {
                         choices.push({ id: value, name: value });
                     }
-                    return "<select>" + choices.map(function (c) { return "<option value=\"" + c.id + "\" " + (value == c.id ? 'selected' : '') + " >" + c.name + "</option>"; }).join('') + "</select>";
+                    return ("<select>" +
+                        choices
+                            .map(function (c) {
+                            return "<option value=\"" + c.id + "\" " + (value == c.id ? "selected" : "") + " >" + c.name + "</option>";
+                        })
+                            .join("") +
+                        "</select>");
                 }
                 else {
-                    return "<input class=\"gantt-inputtable\" type=\"text\" value=\"" + (value ? value : '') + "\">";
+                    return "<input class=\"gantt-inputtable\" type=\"text\" value=\"" + (value ? value : "") + "\">";
                 }
-            case 'cost':
-                return "<input class=\"gantt-inputtable\" type=\"number\" max=\"100\" min=\"0\" value=\"" + (value ? value : '') + "\">";
+            case "cost":
+                return "<input class=\"gantt-inputtable\" type=\"number\" max=\"100\" min=\"0\" value=\"" + (value ? value : "") + "\">";
             default:
-                return "<input class=\"gantt-inputtable\" value=\"" + (value ? value : '') + "\">";
+                return "<input class=\"gantt-inputtable\" value=\"" + (value ? value : "") + "\">";
         }
     }
     else {
@@ -5111,15 +5151,15 @@ exports.newNode = function (pParent, pNodeType, pId, pClass, pText, pWidth, pLef
     if (pClass)
         vNewNode.className = pClass;
     if (pWidth)
-        vNewNode.style.width = (isNaN(pWidth * 1)) ? pWidth : pWidth + 'px';
+        vNewNode.style.width = isNaN(pWidth * 1) ? pWidth : pWidth + "px";
     if (pLeft)
-        vNewNode.style.left = (isNaN(pLeft * 1)) ? pLeft : pLeft + 'px';
+        vNewNode.style.left = isNaN(pLeft * 1) ? pLeft : pLeft + "px";
     if (pText) {
-        if (pText.indexOf && pText.indexOf('<') === -1) {
+        if (pText.indexOf && pText.indexOf("<") === -1) {
             vNewNode.appendChild(document.createTextNode(pText));
         }
         else {
-            vNewNode.insertAdjacentHTML('beforeend', pText);
+            vNewNode.insertAdjacentHTML("beforeend", pText);
         }
     }
     if (pDisplay)
@@ -5143,16 +5183,17 @@ exports.CalcTaskXY = function () {
     var vTaskDiv;
     var vParDiv;
     var vLeft, vTop, vWidth;
-    var vHeight = Math.floor((this.getRowHeight() / 2));
+    var vHeight = Math.floor(this.getRowHeight() / 2);
     for (var i = 0; i < vList.length; i++) {
         vID = vList[i].getID();
         vBarDiv = vList[i].getBarDiv();
         vTaskDiv = vList[i].getTaskDiv();
-        if ((vList[i].getParItem() && vList[i].getParItem().getGroup() == 2)) {
+        if (vList[i].getParItem() && vList[i].getParItem().getGroup() == 2) {
             vParDiv = vList[i].getParItem().getChildRow();
         }
         else
             vParDiv = vList[i].getChildRow();
+        console.log("vParDiv ", vParDiv);
         if (vBarDiv) {
             vList[i].setStartX(vBarDiv.offsetLeft + 1);
             vList[i].setStartY(vParDiv.offsetTop + vBarDiv.offsetTop + vHeight - 1);
@@ -5166,24 +5207,25 @@ exports.sLine = function (x1, y1, x2, y2, pClass) {
     var vTop = Math.min(y1, y2);
     var vWid = Math.abs(x2 - x1) + 1;
     var vHgt = Math.abs(y2 - y1) + 1;
-    var vTmpDiv = document.createElement('div');
-    vTmpDiv.id = this.vDivId + 'line' + this.vDepId++;
-    vTmpDiv.style.position = 'absolute';
-    vTmpDiv.style.overflow = 'hidden';
-    vTmpDiv.style.zIndex = '0';
-    vTmpDiv.style.left = vLeft + 'px';
-    vTmpDiv.style.top = vTop + 'px';
-    vTmpDiv.style.width = vWid + 'px';
-    vTmpDiv.style.height = vHgt + 'px';
-    vTmpDiv.style.visibility = 'visible';
+    var vTmpDiv = document.createElement("div");
+    vTmpDiv.id = this.vDivId + "line" + this.vDepId++;
+    vTmpDiv.style.position = "absolute";
+    vTmpDiv.style.overflow = "hidden";
+    vTmpDiv.style.zIndex = "0";
+    vTmpDiv.style.left = vLeft + "px";
+    vTmpDiv.style.top = vTop + "px";
+    vTmpDiv.style.width = vWid + "px";
+    vTmpDiv.style.height = vHgt + "px";
+    vTmpDiv.style.visibility = "visible";
     if (vWid == 1)
-        vTmpDiv.className = 'glinev';
+        vTmpDiv.className = "glinev";
     else
-        vTmpDiv.className = 'glineh';
+        vTmpDiv.className = "glineh";
     if (pClass)
-        vTmpDiv.className += ' ' + pClass;
+        vTmpDiv.className += " " + pClass;
     this.getLines().appendChild(vTmpDiv);
-    if (this.vEvents.onLineDraw && typeof this.vEvents.onLineDraw === 'function') {
+    if (this.vEvents.onLineDraw &&
+        typeof this.vEvents.onLineDraw === "function") {
         this.vEvents.onLineDraw(vTmpDiv);
     }
     return vTmpDiv;
@@ -5196,20 +5238,22 @@ exports.drawSelector = function (pPos) {
             vDisplay = true;
     }
     if (vDisplay) {
-        var vTmpDiv = exports.newNode(vOutput, 'div', null, 'gselector', this.vLangs[this.vLang]['format'] + ':');
-        if (this.vFormatArr.join().toLowerCase().indexOf('hour') != -1)
-            events_1.addFormatListeners(this, 'hour', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formathour' + pPos, 'gformlabel' + ((this.vFormat == 'hour') ? ' gselected' : ''), this.vLangs[this.vLang]['hour']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('day') != -1)
-            events_1.addFormatListeners(this, 'day', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatday' + pPos, 'gformlabel' + ((this.vFormat == 'day') ? ' gselected' : ''), this.vLangs[this.vLang]['day']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('week') != -1)
-            events_1.addFormatListeners(this, 'week', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatweek' + pPos, 'gformlabel' + ((this.vFormat == 'week') ? ' gselected' : ''), this.vLangs[this.vLang]['week']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('month') != -1)
-            events_1.addFormatListeners(this, 'month', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatmonth' + pPos, 'gformlabel' + ((this.vFormat == 'month') ? ' gselected' : ''), this.vLangs[this.vLang]['month']));
-        if (this.vFormatArr.join().toLowerCase().indexOf('quarter') != -1)
-            events_1.addFormatListeners(this, 'quarter', exports.newNode(vTmpDiv, 'span', this.vDivId + 'formatquarter' + pPos, 'gformlabel' + ((this.vFormat == 'quarter') ? ' gselected' : ''), this.vLangs[this.vLang]['quarter']));
+        var vTmpDiv = exports.newNode(vOutput, "div", null, "gselector", this.vLangs[this.vLang]["format"] + ":");
+        if (this.vFormatArr.join().toLowerCase().indexOf("hour") != -1)
+            events_1.addFormatListeners(this, "hour", exports.newNode(vTmpDiv, "span", this.vDivId + "formathour" + pPos, "gformlabel" + (this.vFormat == "hour" ? " gselected" : ""), this.vLangs[this.vLang]["hour"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("day") != -1)
+            events_1.addFormatListeners(this, "day", exports.newNode(vTmpDiv, "span", this.vDivId + "formatday" + pPos, "gformlabel" + (this.vFormat == "day" ? " gselected" : ""), this.vLangs[this.vLang]["day"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("week") != -1)
+            events_1.addFormatListeners(this, "week", exports.newNode(vTmpDiv, "span", this.vDivId + "formatweek" + pPos, "gformlabel" + (this.vFormat == "week" ? " gselected" : ""), this.vLangs[this.vLang]["week"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("month") != -1)
+            events_1.addFormatListeners(this, "month", exports.newNode(vTmpDiv, "span", this.vDivId + "formatmonth" + pPos, "gformlabel" +
+                (this.vFormat == "month" ? " gselected" : ""), this.vLangs[this.vLang]["month"]));
+        if (this.vFormatArr.join().toLowerCase().indexOf("quarter") != -1)
+            events_1.addFormatListeners(this, "quarter", exports.newNode(vTmpDiv, "span", this.vDivId + "formatquarter" + pPos, "gformlabel" +
+                (this.vFormat == "quarter" ? " gselected" : ""), this.vLangs[this.vLang]["quarter"]));
     }
     else {
-        exports.newNode(vOutput, 'div', null, 'gselector');
+        exports.newNode(vOutput, "div", null, "gselector");
     }
     return vOutput;
 };
