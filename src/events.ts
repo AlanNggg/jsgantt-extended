@@ -364,6 +364,7 @@ export const addTooltipListeners = function (
 
 export const addDragAndDropListeners = function (pGanttChart, pObj1) {
     let isDragging = false;
+    let isPlanTaskBar = false;
     let xOnStart = 0;
     let yOnStart = 0;
     let isResizingLeft = false;
@@ -394,6 +395,10 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
             const element = e.target.closest(".gtaskbar, .handle");
 
             if (element) {
+                const taskBarContainer = e.target.closest(".gtaskbarcontainer");
+                const isPlanTaskBar =
+                    taskBarContainer.classList.contains("gplan");
+
                 const taskBar = element.closest(".gtaskbar");
 
                 if (element.classList.contains("left")) {
@@ -412,6 +417,8 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                 parentBarId = +taskBar.id.match(/(\d+)(?!.*\d)/)[0];
                 barBeingDragged = parentBarId;
 
+                console.log(pGanttChart.getList()[0]);
+
                 bars = pGanttChart
                     .getList()
                     .filter(
@@ -421,8 +428,12 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                     )
                     .map((taskItem) => ({
                         ...taskItem,
-                        startX: taskItem.getStartX(),
-                        endX: taskItem.getEndX(),
+                        startX: !isPlanTaskBar
+                            ? taskItem.getStartX()
+                            : taskItem.getPlanStartX(),
+                        endX: !isPlanTaskBar
+                            ? taskItem.getEndX()
+                            : taskItem.getPlanEndX(),
                     }));
             }
         },
@@ -436,8 +447,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
 
             const dx = e.x - xOnStart;
             const dy = e.y - yOnStart;
-
-            const taskBarContainer = e.target.closest(".gtaskbarcontainer");
 
             bars.forEach((bar) => {
                 let finaldx = getSnapPosition(
@@ -460,10 +469,22 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             bar.endX
                         );
 
-                        if (taskBarContainer.classList.contains("gplan")) {
-                            bar.setPlanStartX(newStartX);
-                        } else {
+                        if (!isPlanTaskBar) {
+                            updateBarPosition(
+                                bar.getBarDiv(),
+                                bar.getTaskDiv(),
+                                newStartX,
+                                bar.endX
+                            );
                             bar.setStartX(newStartX);
+                        } else {
+                            updateBarPosition(
+                                bar.getBarDiv(),
+                                bar.getPlanTaskDiv(),
+                                newStartX,
+                                bar.endX
+                            );
+                            bar.setPlanStartX(newStartX);
                         }
                     } else {
                     }
@@ -473,17 +494,25 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                         const originalEndX = bar.endX;
 
                         console.log(newEndX, originalEndX);
-                        updateBarPosition(
-                            bar.getBarDiv(),
-                            bar.getTaskDiv(),
-                            bar.startX,
-                            newEndX
-                        );
 
-                        if (taskBarContainer.classList.contains("gplan")) {
-                            bar.setPlanEndX(newEndX);
-                        } else {
+                        if (!isPlanTaskBar) {
+                            updateBarPosition(
+                                bar.getBarDiv(),
+                                bar.getTaskDiv(),
+                                bar.startX,
+                                newEndX
+                            );
+
                             bar.setEndX(newEndX);
+                        } else {
+                            updateBarPosition(
+                                bar.getBarDiv(),
+                                bar.getPlanTaskDiv(),
+                                bar.startX,
+                                newEndX
+                            );
+
+                            bar.setPlanEndX(newEndX);
                         }
                     }
                 } else if (isDragging) {
@@ -503,23 +532,34 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                 const taskBarContainer = e.target.closest(".gtaskbarcontainer");
 
                 bars.forEach((bar) => {
-                    const { newStartDate, newEndDate } = computeStartEndDate(
-                        bar,
-                        bar.getStartX(),
-                        bar.startX,
-                        bar.getEndX(),
-                        bar.endX,
-                        vColWidth,
-                        pGanttChart.vFormat,
-                        false
-                    );
-
-                    if (taskBarContainer.classList.contains("gplan")) {
-                        bar.setPlanStartX(newStartDate);
-                        bar.setPlanEndX(newEndDate);
-                    } else {
+                    if (!isPlanTaskBar) {
+                        const { newStartDate, newEndDate } =
+                            computeStartEndDate(
+                                bar,
+                                bar.getStartX(),
+                                bar.startX,
+                                bar.getEndX(),
+                                bar.endX,
+                                vColWidth,
+                                pGanttChart.vFormat,
+                                false
+                            );
                         bar.setStart(newStartDate);
                         bar.setEnd(newEndDate);
+                    } else {
+                        const { newStartDate, newEndDate } =
+                            computeStartEndDate(
+                                bar,
+                                bar.getPlanStartX(),
+                                bar.startX,
+                                bar.getPlanEndX(),
+                                bar.endX,
+                                vColWidth,
+                                pGanttChart.vFormat,
+                                false
+                            );
+                        bar.setPlanStartX(newStartDate);
+                        bar.setPlanEndX(newEndDate);
                     }
 
                     if (bar.getID() === parentBarId) {

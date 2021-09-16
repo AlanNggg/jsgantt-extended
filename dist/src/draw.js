@@ -530,7 +530,6 @@ exports.GanttChart = function (pDiv, pFormat) {
                 var vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gtaskcell gtaskcellmile", null, vColWidth, null, null, null);
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpCell, "div", null, "gtaskcelldiv", "\u00A0\u00A0");
                 vTmpDiv_1 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "bardiv_" + vID, "gtaskbarcontainer", null, 12, vTaskLeftPx_1 + vTaskRightPx - 6);
-                // TODO: reference
                 this.vTaskList[i].setBarDiv(vTmpDiv_1);
                 var vTmpDiv2 = draw_utils_1.newNode(vTmpDiv_1, "div", this.vDivId + "taskbar_" + vID, this.vTaskList[i].getClass() + " gtaskbar", null, 12);
                 this.vTaskList[i].setTaskDiv(vTmpDiv2);
@@ -672,8 +671,6 @@ exports.GanttChart = function (pDiv, pFormat) {
                     this.vTaskList[i].getTaskDiv().style.position = "relative";
                     var vTmpDiv3 = draw_utils_1.newNode(this.vTaskList[i].getTaskDiv(), "div", null, "handle left", null, null, null);
                     var vTmpDiv4 = draw_utils_1.newNode(this.vTaskList[i].getTaskDiv(), "div", null, "handle right", null, null, null);
-                    var vTmpDiv5 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
-                    var vTmpDiv6 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
                 }
             }
             // Add Plan Task Info div for tooltip
@@ -682,6 +679,11 @@ exports.GanttChart = function (pDiv, pFormat) {
                 var _b = this.createTaskInfo(this.vTaskList[i], this.vTooltipTemplate), component = _b.component, callback = _b.callback;
                 vTmpDiv2.appendChild(component);
                 events_1.addTooltipListeners(this, this.vTaskList[i].getPlanTaskDiv(), vTmpDiv2, callback);
+                // add handle
+                if (this.vDraggable) {
+                    var vTmpDiv5 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle left", null, null, null);
+                    var vTmpDiv6 = draw_utils_1.newNode(this.vTaskList[i].getPlanTaskDiv(), "div", null, "handle right", null, null, null);
+                }
             }
         }
         // Include the footer with the days/week/month...

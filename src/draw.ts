@@ -1069,7 +1069,7 @@ export const GanttChart = function (pDiv, pFormat) {
                     12,
                     vTaskLeftPx + vTaskRightPx - 6
                 );
-                // TODO: reference
+
                 this.vTaskList[i].setBarDiv(vTmpDiv);
                 let vTmpDiv2 = newNode(
                     vTmpDiv,
@@ -1434,26 +1434,6 @@ export const GanttChart = function (pDiv, pFormat) {
                         null,
                         null
                     );
-
-                    const vTmpDiv5 = newNode(
-                        this.vTaskList[i].getPlanTaskDiv(),
-                        "div",
-                        null,
-                        "handle left",
-                        null,
-                        null,
-                        null
-                    );
-
-                    const vTmpDiv6 = newNode(
-                        this.vTaskList[i].getPlanTaskDiv(),
-                        "div",
-                        null,
-                        "handle right",
-                        null,
-                        null,
-                        null
-                    );
                 }
             }
 
@@ -1480,6 +1460,29 @@ export const GanttChart = function (pDiv, pFormat) {
                     vTmpDiv2,
                     callback
                 );
+
+                // add handle
+                if (this.vDraggable) {
+                    const vTmpDiv5 = newNode(
+                        this.vTaskList[i].getPlanTaskDiv(),
+                        "div",
+                        null,
+                        "handle left",
+                        null,
+                        null,
+                        null
+                    );
+
+                    const vTmpDiv6 = newNode(
+                        this.vTaskList[i].getPlanTaskDiv(),
+                        "div",
+                        null,
+                        "handle right",
+                        null,
+                        null,
+                        null
+                    );
+                }
             }
         }
 
