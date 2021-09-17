@@ -79,6 +79,7 @@ export const TaskItemObject = function (object) {
         object.pPlanStart,
         object.pPlanEnd,
         object.pDuration,
+        object.pRemovable,
         object.pBarText,
         object
     );
@@ -105,6 +106,7 @@ export const TaskItem = function (
     pPlanStart = null,
     pPlanEnd = null,
     pDuration = null,
+    pRemovable = null,
     pBarText = null,
     pDataObject = null
 ) {
@@ -127,6 +129,7 @@ export const TaskItem = function (
     let vComp = parseFloat(document.createTextNode(pComp).data);
     let vCost = parseInt(document.createTextNode(pCost).data);
     let vGroup = parseInt(document.createTextNode(pGroup).data);
+    let vRemovable = parseInt(document.createTextNode(pRemovable).data);
     let vDataObject = pDataObject;
     let vCompVal;
 
@@ -453,6 +456,9 @@ export const TaskItem = function (
     this.getGroup = function () {
         return vGroup;
     };
+    this.getRemovable = function () {
+        return vRemovable;
+    };
     this.getOpen = function () {
         return vOpen;
     };
@@ -645,6 +651,15 @@ export const TaskItem = function (
             vGroup = parseInt(document.createTextNode(pGroup).data);
         }
     };
+    this.setRemovable = function (pRemovable) {
+        if (pRemovable === true || pRemovable === "true") {
+            vRemovable = 1;
+        } else if (pRemovable === false || pRemovable === "false") {
+            vRemovable = 0;
+        } else {
+            vRemovable = parseInt(document.createTextNode(pRemovable).data);
+        }
+    };
     this.setBarText = function (pBarText) {
         if (pBarText) vBarText = pBarText;
     };
@@ -715,7 +730,7 @@ export const TaskItem = function (
             pComp: vComp,
             pCost: vCost,
             pGroup: vGroup,
-            pDataObjec: vDataObject,
+            pDataObject: vDataObject,
         };
     };
 };

@@ -202,6 +202,15 @@ span.gfoldercollapse {
     font-family: Courier, "Courier New", monospace;
 }
 
+span.gtaskremove {
+    color: #ff0000;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 12px;
+    float: right;
+    margin-right: 5px;
+}
+
 .gtasktableh,
 .gtasktable {
     border-right: #efefef 1px solid;

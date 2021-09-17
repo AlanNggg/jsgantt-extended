@@ -14,6 +14,7 @@ import {
     syncScroll,
     updateGridHeaderWidth,
     removeListener,
+    addRemoveListeners,
 } from "./events";
 import {
     calculateCurrentDateOffset,
@@ -103,6 +104,7 @@ export const GanttChart = function (pDiv, pFormat) {
     };
 
     this.vEventClickCollapse = null;
+    this.vEventClickRemove = null;
     this.vEventClickRow = null;
     this.vEvents = {
         taskname: null,
@@ -352,18 +354,29 @@ export const GanttChart = function (pDiv, pFormat) {
                 const task = this.vTaskList[i];
                 const vEventClickRow = this.vEventClickRow;
                 const vEventClickCollapse = this.vEventClickCollapse;
+                const vEventClickRemove = this.vEventClickRemove;
                 addListener(
                     "click",
                     function (e) {
                         if (
                             e.target.classList.contains("gfoldercollapse") ===
-                            false
+                                false &&
+                            e.target.classList.contains("gtaskremove") === false
                         ) {
                             if (
                                 vEventClickRow &&
                                 typeof vEventClickRow === "function"
                             ) {
                                 vEventClickRow(task);
+                            }
+                        } else if (
+                            e.target.classList.contains("gtaskremove") === true
+                        ) {
+                            if (
+                                vEventClickRemove &&
+                                typeof vEventClickRemove === "function"
+                            ) {
+                                vEventClickRemove(task);
                             }
                         } else {
                             if (
@@ -398,6 +411,18 @@ export const GanttChart = function (pDiv, pFormat) {
                     const divTask = document.createElement("span");
                     divTask.innerHTML = "\u00A0" + this.vTaskList[i].getName();
                     vTmpDiv.appendChild(divTask);
+
+                    if (this.vTaskList[i].getRemovable() === 1) {
+                        let vTmpSpan = newNode(
+                            vTmpDiv,
+                            "span",
+                            this.vDivId + "remove_" + vID,
+                            "gtaskremove",
+                            "x"
+                        );
+                        addRemoveListeners(this, vTmpSpan, vID);
+                    }
+
                     // const text = makeInput(this.vTaskList[i].getName(), this.vEditable, 'text');
                     // vTmpDiv.appendChild(document.createNode(text));
                     const callback = (task, e) => task.setName(e.target.value);
@@ -430,6 +455,18 @@ export const GanttChart = function (pDiv, pFormat) {
                         null,
                         vCellContents + text
                     );
+
+                    if (this.vTaskList[i].getRemovable() === 1) {
+                        let vTmpSpan = newNode(
+                            vTmpDiv,
+                            "span",
+                            this.vDivId + "remove_" + vID,
+                            "gtaskremove",
+                            "x"
+                        );
+                        addRemoveListeners(this, vTmpSpan, vID);
+                    }
+
                     const callback = (task, e) => task.setName(e.target.value);
                     addListenerInputCell(
                         vTmpCell,

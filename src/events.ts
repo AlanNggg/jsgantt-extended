@@ -658,6 +658,17 @@ export const addFolderListeners = function (pGanttChart, pObj, pID) {
     );
 };
 
+export const addRemoveListeners = function (pGanttChart, pObj, pID) {
+    addListener(
+        "click",
+        function () {
+            pGanttChart.RemoveTaskItem(pID);
+            pGanttChart.Draw();
+        },
+        pObj
+    );
+};
+
 export const addFormatListeners = function (pGanttChart, pFormat, pObj) {
     addListener(
         "click",
@@ -693,6 +704,7 @@ export const addListenerClickCell = function (vTmpCell, vEvents, task, column) {
         function (e) {
             if (
                 e.target.classList.contains("gfoldercollapse") === false &&
+                e.target.classList.contains("gtaskremove") === false &&
                 vEvents[column] &&
                 typeof vEvents[column] === "function"
             ) {
@@ -809,4 +821,5 @@ const vColumnsNames = {
     depend: "pDepend",
     caption: "pCaption",
     note: "pNotes",
+    removable: "pRemovable",
 };

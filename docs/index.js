@@ -177,9 +177,10 @@ function start(e) {
         //   pOpen: 1,
         //   pNotes: "",
         //   category: 'test'
+        //   pRemovable: 0,
         // });
 
-        // Parameters                     (pID, pName,                  pStart,       pEnd,        pStyle,         pLink (unused)  pLink: pMilpMile: e, pRes,       pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt)
+        // Parameters                     (pID, pName,                  pStart,       pEnd,        pStyle,         pLink (unused)  pLink: pMilpMile: e, pRes,       pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt, pRemovable)
         if (dataurl !== newDataurl) {
             dataurl = newDataurl;
             JSGantt.parseJSON(dataurl, g, vDebug).then((j) => (jsonObj = j));

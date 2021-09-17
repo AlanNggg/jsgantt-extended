@@ -65,6 +65,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         6: true,
     };
     this.vEventClickCollapse = null;
+    this.vEventClickRemove = null;
     this.vEventClickRow = null;
     this.vEvents = {
         taskname: null,
@@ -236,12 +237,20 @@ exports.GanttChart = function (pDiv, pFormat) {
                 var task_2 = this_1.vTaskList[i];
                 var vEventClickRow_1 = this_1.vEventClickRow;
                 var vEventClickCollapse_1 = this_1.vEventClickCollapse;
+                var vEventClickRemove_1 = this_1.vEventClickRemove;
                 events_1.addListener("click", function (e) {
                     if (e.target.classList.contains("gfoldercollapse") ===
-                        false) {
+                        false &&
+                        e.target.classList.contains("gtaskremove") === false) {
                         if (vEventClickRow_1 &&
                             typeof vEventClickRow_1 === "function") {
                             vEventClickRow_1(task_2);
+                        }
+                    }
+                    else if (e.target.classList.contains("gtaskremove") === true) {
+                        if (vEventClickRemove_1 &&
+                            typeof vEventClickRemove_1 === "function") {
+                            vEventClickRemove_1(task_2);
                         }
                     }
                     else {
@@ -259,6 +268,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                     var divTask = document.createElement("span");
                     divTask.innerHTML = "\u00A0" + this_1.vTaskList[i].getName();
                     vTmpDiv.appendChild(divTask);
+                    if (this_1.vTaskList[i].getRemovable() === 1) {
+                        var vTmpSpan_1 = draw_utils_1.newNode(vTmpDiv, "span", this_1.vDivId + "remove_" + vID, "gtaskremove", "x");
+                        events_1.addRemoveListeners(this_1, vTmpSpan_1, vID);
+                    }
                     // const text = makeInput(this.vTaskList[i].getName(), this.vEditable, 'text');
                     // vTmpDiv.appendChild(document.createNode(text));
                     var callback = function (task, e) { return task.setName(e.target.value); };
@@ -269,6 +282,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                     vCellContents += "\u00A0\u00A0\u00A0\u00A0";
                     var text = draw_utils_1.makeInput(this_1.vTaskList[i].getName(), this_1.vEditable, "text");
                     var vTmpDiv = draw_utils_1.newNode(vTmpCell_1, "div", null, null, vCellContents + text);
+                    if (this_1.vTaskList[i].getRemovable() === 1) {
+                        var vTmpSpan = draw_utils_1.newNode(vTmpDiv, "span", this_1.vDivId + "remove_" + vID, "gtaskremove", "x");
+                        events_1.addRemoveListeners(this_1, vTmpSpan, vID);
+                    }
                     var callback = function (task, e) { return task.setName(e.target.value); };
                     events_1.addListenerInputCell(vTmpCell_1, this_1.vEventsChange, callback, this_1.vTaskList, i, "taskname", this_1.Draw.bind(this_1));
                     events_1.addListenerClickCell(vTmpCell_1, this_1.vEvents, this_1.vTaskList[i], "taskname");
@@ -1197,7 +1214,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addDragAndDropListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
+exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addRemoveListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addDragAndDropListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
 var task_1 = require("./task");
 var general_utils_1 = require("./utils/general_utils");
 // Function to open/close and hide/show children of specified task
@@ -1654,6 +1671,12 @@ exports.addFolderListeners = function (pGanttChart, pObj, pID) {
         exports.updateGridHeaderWidth(pGanttChart);
     }, pObj);
 };
+exports.addRemoveListeners = function (pGanttChart, pObj, pID) {
+    exports.addListener("click", function () {
+        pGanttChart.RemoveTaskItem(pID);
+        pGanttChart.Draw();
+    }, pObj);
+};
 exports.addFormatListeners = function (pGanttChart, pFormat, pObj) {
     exports.addListener("click", function () {
         general_utils_1.changeFormat(pFormat, pGanttChart);
@@ -1672,6 +1695,7 @@ exports.addScrollListeners = function (pGanttChart) {
 exports.addListenerClickCell = function (vTmpCell, vEvents, task, column) {
     exports.addListener("click", function (e) {
         if (e.target.classList.contains("gfoldercollapse") === false &&
+            e.target.classList.contains("gtaskremove") === false &&
             vEvents[column] &&
             typeof vEvents[column] === "function") {
             vEvents[column](task, e, vTmpCell, column);
@@ -1758,6 +1782,7 @@ var vColumnsNames = {
     depend: "pDepend",
     caption: "pCaption",
     note: "pNotes",
+    removable: "pRemovable",
 };
 
 },{"./task":10,"./utils/general_utils":13}],6:[function(require,module,exports){
@@ -1913,12 +1938,12 @@ exports.parseJSON = function (pFile, pGanttVar, vDebug, redrawAfter) {
                     jsonObj = _a.sent();
                     if (vDebug) {
                         bd = new Date();
-                        console.info('before jsonparse', bd);
+                        console.info("before jsonparse", bd);
                     }
                     exports.addJSONTask(pGanttVar, jsonObj);
                     if (this.vDebug) {
                         ad = new Date();
-                        console.info('after addJSONTask', ad, (ad.getTime() - bd.getTime()));
+                        console.info("after addJSONTask", ad, ad.getTime() - bd.getTime());
                     }
                     if (redrawAfter) {
                         pGanttVar.Draw();
@@ -1940,102 +1965,107 @@ exports.addJSONTask = function (pGanttVar, pJsonObj) {
         var planstart = void 0;
         var planend = void 0;
         var itemClass = void 0;
-        var link = '';
+        var link = "";
         var milestone = 0;
-        var resourceName = '';
+        var resourceName = "";
         var completion = void 0;
         var group = 0;
         var parent_1 = void 0;
         var open_1 = void 0;
-        var dependsOn = '';
-        var caption = '';
-        var notes = '';
+        var dependsOn = "";
+        var caption = "";
+        var notes = "";
         var cost = void 0;
-        var duration = '';
-        var bartext = '';
+        var duration = "";
+        var removable = 0;
+        var bartext = "";
         var additionalObject = {};
         for (var prop in pJsonObj[index]) {
             var property = prop;
             var value = pJsonObj[index][property];
             switch (property.toLowerCase()) {
-                case 'pid':
-                case 'id':
+                case "pid":
+                case "id":
                     id = value;
                     break;
-                case 'pname':
-                case 'name':
+                case "pname":
+                case "name":
                     name_1 = value;
                     break;
-                case 'pstart':
-                case 'start':
+                case "pstart":
+                case "start":
                     start = value;
                     break;
-                case 'pend':
-                case 'end':
+                case "pend":
+                case "end":
                     end = value;
                     break;
-                case 'pplanstart':
-                case 'planstart':
+                case "pplanstart":
+                case "planstart":
                     planstart = value;
                     break;
-                case 'pplanend':
-                case 'planend':
+                case "pplanend":
+                case "planend":
                     planend = value;
                     break;
-                case 'pclass':
-                case 'class':
+                case "pclass":
+                case "class":
                     itemClass = value;
                     break;
-                case 'plink':
-                case 'link':
+                case "plink":
+                case "link":
                     link = value;
                     break;
-                case 'pmile':
-                case 'mile':
+                case "pmile":
+                case "mile":
                     milestone = value;
                     break;
-                case 'pres':
-                case 'res':
+                case "pres":
+                case "res":
                     resourceName = value;
                     break;
-                case 'pcomp':
-                case 'comp':
+                case "pcomp":
+                case "comp":
                     completion = value;
                     break;
-                case 'pgroup':
-                case 'group':
+                case "pgroup":
+                case "group":
                     group = value;
                     break;
-                case 'pparent':
-                case 'parent':
+                case "premovable":
+                case "removable":
+                    removable = value;
+                    break;
+                case "pparent":
+                case "parent":
                     parent_1 = value;
                     break;
-                case 'popen':
-                case 'open':
+                case "popen":
+                case "open":
                     open_1 = value;
                     break;
-                case 'pdepend':
-                case 'depend':
+                case "pdepend":
+                case "depend":
                     dependsOn = value;
                     break;
-                case 'pcaption':
-                case 'caption':
+                case "pcaption":
+                case "caption":
                     caption = value;
                     break;
-                case 'pnotes':
-                case 'notes':
+                case "pnotes":
+                case "notes":
                     notes = value;
                     break;
-                case 'pcost':
-                case 'cost':
+                case "pcost":
+                case "cost":
                     cost = value;
                     break;
-                case 'duration':
-                case 'pduration':
+                case "duration":
+                case "pduration":
                     duration = value;
                     break;
-                case 'bartext':
-                case 'pbartext':
+                case "bartext":
+                case "pbartext":
                     bartext = value;
                     break;
                 default:
@@ -2043,7 +2073,7 @@ exports.addJSONTask = function (pGanttVar, pJsonObj) {
             }
         }
         //if (id != undefined && !isNaN(parseInt(id)) && isFinite(id) && name && start && end && itemClass && completion != undefined && !isNaN(parseFloat(completion)) && isFinite(completion) && !isNaN(parseInt(parent)) && isFinite(parent)) {
-        pGanttVar.AddTaskItem(new task_1.TaskItem(id, name_1, start, end, itemClass, link, milestone, resourceName, completion, group, parent_1, open_1, dependsOn, caption, notes, pGanttVar, cost, planstart, planend, duration, bartext, additionalObject));
+        pGanttVar.AddTaskItem(new task_1.TaskItem(id, name_1, start, end, itemClass, link, milestone, resourceName, completion, group, parent_1, open_1, dependsOn, caption, notes, pGanttVar, cost, planstart, planend, duration, removable, bartext, additionalObject));
         //}
     }
 };
@@ -3876,13 +3906,14 @@ exports.TaskItemObject = function (object) {
     general_utils_1.internalProperties.forEach(function (property) {
         delete pDataObject[property];
     });
-    return new exports.TaskItem(object.pID, object.pName, object.pStart, object.pEnd, object.pClass, object.pLink, object.pMile, object.pRes, object.pComp, object.pGroup, object.pParent, object.pOpen, object.pDepend, object.pCaption, object.pNotes, object.pGantt, object.pCost, object.pPlanStart, object.pPlanEnd, object.pDuration, object.pBarText, object);
+    return new exports.TaskItem(object.pID, object.pName, object.pStart, object.pEnd, object.pClass, object.pLink, object.pMile, object.pRes, object.pComp, object.pGroup, object.pParent, object.pOpen, object.pDepend, object.pCaption, object.pNotes, object.pGantt, object.pCost, object.pPlanStart, object.pPlanEnd, object.pDuration, object.pRemovable, object.pBarText, object);
 };
-exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt, pCost, pPlanStart, pPlanEnd, pDuration, pBarText, pDataObject) {
+exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt, pCost, pPlanStart, pPlanEnd, pDuration, pRemovable, pBarText, pDataObject) {
     if (pCost === void 0) { pCost = null; }
     if (pPlanStart === void 0) { pPlanStart = null; }
     if (pPlanEnd === void 0) { pPlanEnd = null; }
     if (pDuration === void 0) { pDuration = null; }
+    if (pRemovable === void 0) { pRemovable = null; }
     if (pBarText === void 0) { pBarText = null; }
     if (pDataObject === void 0) { pDataObject = null; }
     var vGantt = pGantt ? pGantt : this;
@@ -3904,6 +3935,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     var vComp = parseFloat(document.createTextNode(pComp).data);
     var vCost = parseInt(document.createTextNode(pCost).data);
     var vGroup = parseInt(document.createTextNode(pGroup).data);
+    var vRemovable = parseInt(document.createTextNode(pRemovable).data);
     var vDataObject = pDataObject;
     var vCompVal;
     var parent = document.createTextNode(pParent).data;
@@ -4223,6 +4255,9 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     this.getGroup = function () {
         return vGroup;
     };
+    this.getRemovable = function () {
+        return vRemovable;
+    };
     this.getOpen = function () {
         return vOpen;
     };
@@ -4426,6 +4461,17 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             vGroup = parseInt(document.createTextNode(pGroup).data);
         }
     };
+    this.setRemovable = function (pRemovable) {
+        if (pRemovable === true || pRemovable === "true") {
+            vRemovable = 1;
+        }
+        else if (pRemovable === false || pRemovable === "false") {
+            vRemovable = 0;
+        }
+        else {
+            vRemovable = parseInt(document.createTextNode(pRemovable).data);
+        }
+    };
     this.setBarText = function (pBarText) {
         if (pBarText)
             vBarText = pBarText;
@@ -4482,7 +4528,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             pComp: vComp,
             pCost: vCost,
             pGroup: vGroup,
-            pDataObjec: vDataObject,
+            pDataObject: vDataObject,
         };
     };
 };
@@ -5301,6 +5347,7 @@ exports.internalProperties = [
     "pRes",
     "pComp",
     "pGroup",
+    "pRemovable",
     "pParent",
     "pOpen",
     "pDepend",
@@ -5322,6 +5369,7 @@ exports.internalPropertiesLang = {
     "pDuration": "dur",
     "pComp": "comp",
     "pGroup": "group",
+    "pRemovable": "removable",
     "pParent": "parent",
     "pOpen": "open",
     "pDepend": "depend",
@@ -5918,20 +5966,19 @@ var date_utils_1 = require("./utils/date_utils");
 var draw_utils_1 = require("./utils/draw_utils");
 var general_utils_1 = require("./utils/general_utils");
 exports.parseXML = function (pFile, pGanttVar) {
-    return general_utils_1.makeRequest(pFile, false, false)
-        .then(function (xmlDoc) {
+    return general_utils_1.makeRequest(pFile, false, false).then(function (xmlDoc) {
         exports.AddXMLTask(pGanttVar, xmlDoc);
     });
 };
 exports.parseXMLString = function (pStr, pGanttVar) {
     var xmlDoc;
-    if (typeof window.DOMParser != 'undefined') {
-        xmlDoc = (new window.DOMParser()).parseFromString(pStr, 'text/xml');
+    if (typeof window.DOMParser != "undefined") {
+        xmlDoc = new window.DOMParser().parseFromString(pStr, "text/xml");
     }
-    else if (typeof window.ActiveXObject != 'undefined' &&
-        new window.ActiveXObject('Microsoft.XMLDOM')) {
-        xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-        xmlDoc.async = 'false';
+    else if (typeof window.ActiveXObject != "undefined" &&
+        new window.ActiveXObject("Microsoft.XMLDOM")) {
+        xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
+        xmlDoc.async = "false";
         xmlDoc.loadXML(pStr);
     }
     exports.AddXMLTask(pGanttVar, xmlDoc);
@@ -5941,22 +5988,21 @@ exports.findXMLNode = function (pRoot, pNodeName) {
     try {
         vRetValue = pRoot.getElementsByTagName(pNodeName);
     }
-    catch (error) {
-        ;
-    } // do nothing, we'll return undefined
+    catch (error) { } // do nothing, we'll return undefined
     return vRetValue;
 };
 // pType can be 1=numeric, 2=String, all other values just return raw data
 exports.getXMLNodeValue = function (pRoot, pNodeName, pType, pDefault) {
     var vRetValue;
     try {
-        vRetValue = pRoot.getElementsByTagName(pNodeName)[0].childNodes[0].nodeValue;
+        vRetValue =
+            pRoot.getElementsByTagName(pNodeName)[0].childNodes[0].nodeValue;
     }
     catch (error) {
-        if (typeof pDefault != 'undefined')
+        if (typeof pDefault != "undefined")
             vRetValue = pDefault;
     }
-    if (typeof vRetValue != 'undefined' && vRetValue != null) {
+    if (typeof vRetValue != "undefined" && vRetValue != null) {
         if (pType == 1)
             vRetValue *= 1;
         else if (pType == 2)
@@ -5965,7 +6011,7 @@ exports.getXMLNodeValue = function (pRoot, pNodeName, pType, pDefault) {
     return vRetValue;
 };
 exports.AddXMLTask = function (pGanttVar, pXmlDoc) {
-    var project = '';
+    var project = "";
     var Task;
     var n = 0;
     var m = 0;
@@ -5977,39 +6023,39 @@ exports.AddXMLTask = function (pGanttVar, pXmlDoc) {
     var assRes = new Array();
     var res = new Array();
     var pars = new Array();
-    var projNode = exports.findXMLNode(pXmlDoc, 'Project');
-    if (typeof projNode != 'undefined' && projNode.length > 0) {
-        project = projNode[0].getAttribute('xmlns');
+    var projNode = exports.findXMLNode(pXmlDoc, "Project");
+    if (typeof projNode != "undefined" && projNode.length > 0) {
+        project = projNode[0].getAttribute("xmlns");
     }
-    if (project == 'http://schemas.microsoft.com/project') {
-        pGanttVar.setDateInputFormat('yyyy-mm-dd');
-        Task = exports.findXMLNode(pXmlDoc, 'Task');
-        if (typeof Task == 'undefined')
+    if (project == "http://schemas.microsoft.com/project") {
+        pGanttVar.setDateInputFormat("yyyy-mm-dd");
+        Task = exports.findXMLNode(pXmlDoc, "Task");
+        if (typeof Task == "undefined")
             n = 0;
         else
             n = Task.length;
-        var resources = exports.findXMLNode(pXmlDoc, 'Resource');
-        if (typeof resources == 'undefined') {
+        var resources = exports.findXMLNode(pXmlDoc, "Resource");
+        if (typeof resources == "undefined") {
             n = 0;
             m = 0;
         }
         else
             m = resources.length;
         for (i = 0; i < m; i++) {
-            var resname = exports.getXMLNodeValue(resources[i], 'Name', 2, '');
-            var uid = exports.getXMLNodeValue(resources[i], 'UID', 1, -1);
+            var resname = exports.getXMLNodeValue(resources[i], "Name", 2, "");
+            var uid = exports.getXMLNodeValue(resources[i], "UID", 1, -1);
             if (resname.length > 0 && uid > 0)
                 res[uid] = resname;
         }
-        var assignments = exports.findXMLNode(pXmlDoc, 'Assignment');
-        if (typeof assignments == 'undefined')
+        var assignments = exports.findXMLNode(pXmlDoc, "Assignment");
+        if (typeof assignments == "undefined")
             j = 0;
         else
             j = assignments.length;
         for (i = 0; i < j; i++) {
             var uid = void 0;
-            var resUID = exports.getXMLNodeValue(assignments[i], 'ResourceUID', 1, -1);
-            uid = exports.getXMLNodeValue(assignments[i], 'TaskUID', 1, -1);
+            var resUID = exports.getXMLNodeValue(assignments[i], "ResourceUID", 1, -1);
+            uid = exports.getXMLNodeValue(assignments[i], "TaskUID", 1, -1);
             if (uid > 0) {
                 if (resUID > 0)
                     assRes[uid] = res[resUID];
@@ -6019,10 +6065,10 @@ exports.AddXMLTask = function (pGanttVar, pXmlDoc) {
         // Store information about parent UIDs in an easily searchable form
         for (i = 0; i < n; i++) {
             var uid = void 0;
-            uid = exports.getXMLNodeValue(Task[i], 'UID', 1, 0);
+            uid = exports.getXMLNodeValue(Task[i], "UID", 1, 0);
             var vOutlineNumber = void 0;
             if (uid != 0)
-                vOutlineNumber = exports.getXMLNodeValue(Task[i], 'OutlineNumber', 2, '0');
+                vOutlineNumber = exports.getXMLNodeValue(Task[i], "OutlineNumber", 2, "0");
             if (uid > 0)
                 pars[vOutlineNumber] = uid;
             if (uid > maxPID)
@@ -6031,155 +6077,161 @@ exports.AddXMLTask = function (pGanttVar, pXmlDoc) {
         for (i = 0; i < n; i++) {
             // optional parameters may not have an entry
             // Task ID must NOT be zero otherwise it will be skipped
-            var pID = exports.getXMLNodeValue(Task[i], 'UID', 1, 0);
+            var pID = exports.getXMLNodeValue(Task[i], "UID", 1, 0);
             if (pID != 0) {
-                var pName = exports.getXMLNodeValue(Task[i], 'Name', 2, 'No Task Name');
-                var pStart = exports.getXMLNodeValue(Task[i], 'Start', 2, '');
-                var pEnd = exports.getXMLNodeValue(Task[i], 'Finish', 2, '');
-                var pPlanStart = exports.getXMLNodeValue(Task[i], 'PlanStart', 2, '');
-                var pPlanEnd = exports.getXMLNodeValue(Task[i], 'PlanFinish', 2, '');
-                var pDuration = exports.getXMLNodeValue(Task[i], 'Duration', 2, '');
-                var pLink = exports.getXMLNodeValue(Task[i], 'HyperlinkAddress', 2, '');
-                var pMile = exports.getXMLNodeValue(Task[i], 'Milestone', 1, 0);
-                var pComp = exports.getXMLNodeValue(Task[i], 'PercentWorkComplete', 1, 0);
-                var pCost = exports.getXMLNodeValue(Task[i], 'Cost', 2, 0);
-                var pGroup = exports.getXMLNodeValue(Task[i], 'Summary', 1, 0);
+                var pName = exports.getXMLNodeValue(Task[i], "Name", 2, "No Task Name");
+                var pStart = exports.getXMLNodeValue(Task[i], "Start", 2, "");
+                var pEnd = exports.getXMLNodeValue(Task[i], "Finish", 2, "");
+                var pPlanStart = exports.getXMLNodeValue(Task[i], "PlanStart", 2, "");
+                var pPlanEnd = exports.getXMLNodeValue(Task[i], "PlanFinish", 2, "");
+                var pDuration = exports.getXMLNodeValue(Task[i], "Duration", 2, "");
+                var pLink = exports.getXMLNodeValue(Task[i], "HyperlinkAddress", 2, "");
+                var pMile = exports.getXMLNodeValue(Task[i], "Milestone", 1, 0);
+                var pComp = exports.getXMLNodeValue(Task[i], "PercentWorkComplete", 1, 0);
+                var pCost = exports.getXMLNodeValue(Task[i], "Cost", 2, 0);
+                var pGroup = exports.getXMLNodeValue(Task[i], "Summary", 1, 0);
+                var pRemovable = exports.getXMLNodeValue(Task[i], "Removable", 1, 0);
                 var pParent = 0;
-                var vOutlineLevel = exports.getXMLNodeValue(Task[i], 'OutlineLevel', 1, 0);
+                var vOutlineLevel = exports.getXMLNodeValue(Task[i], "OutlineLevel", 1, 0);
                 var vOutlineNumber = void 0;
                 if (vOutlineLevel > 1) {
-                    vOutlineNumber = exports.getXMLNodeValue(Task[i], 'OutlineNumber', 2, '0');
-                    pParent = pars[vOutlineNumber.substr(0, vOutlineNumber.lastIndexOf('.'))];
+                    vOutlineNumber = exports.getXMLNodeValue(Task[i], "OutlineNumber", 2, "0");
+                    pParent =
+                        pars[vOutlineNumber.substr(0, vOutlineNumber.lastIndexOf("."))];
                 }
                 var pNotes = void 0;
                 try {
-                    pNotes = Task[i].getElementsByTagName('Notes')[0].childNodes[1].nodeValue; //this should be a CDATA node
+                    pNotes =
+                        Task[i].getElementsByTagName("Notes")[0].childNodes[1]
+                            .nodeValue; //this should be a CDATA node
                 }
                 catch (error) {
-                    pNotes = '';
+                    pNotes = "";
                 }
                 var pRes = void 0;
-                if (typeof assRes[pID] != 'undefined')
+                if (typeof assRes[pID] != "undefined")
                     pRes = assRes[pID];
                 else
-                    pRes = '';
-                var predecessors = exports.findXMLNode(Task[i], 'PredecessorLink');
-                if (typeof predecessors == 'undefined')
+                    pRes = "";
+                var predecessors = exports.findXMLNode(Task[i], "PredecessorLink");
+                if (typeof predecessors == "undefined")
                     j = 0;
                 else
                     j = predecessors.length;
-                var pDepend = '';
+                var pDepend = "";
                 for (k = 0; k < j; k++) {
-                    var depUID = exports.getXMLNodeValue(predecessors[k], 'PredecessorUID', 1, -1);
-                    var depType = exports.getXMLNodeValue(predecessors[k], 'Type', 1, 1);
+                    var depUID = exports.getXMLNodeValue(predecessors[k], "PredecessorUID", 1, -1);
+                    var depType = exports.getXMLNodeValue(predecessors[k], "Type", 1, 1);
                     if (depUID > 0) {
                         if (pDepend.length > 0)
-                            pDepend += ',';
+                            pDepend += ",";
                         switch (depType) {
                             case 0:
-                                pDepend += depUID + 'FF';
+                                pDepend += depUID + "FF";
                                 break;
                             case 1:
-                                pDepend += depUID + 'FS';
+                                pDepend += depUID + "FS";
                                 break;
                             case 2:
-                                pDepend += depUID + 'SF';
+                                pDepend += depUID + "SF";
                                 break;
                             case 3:
-                                pDepend += depUID + 'SS';
+                                pDepend += depUID + "SS";
                                 break;
                             default:
-                                pDepend += depUID + 'FS';
+                                pDepend += depUID + "FS";
                                 break;
                         }
                     }
                 }
                 var pOpen = 1;
-                var pCaption = '';
+                var pCaption = "";
                 var pClass = void 0;
                 if (pGroup > 0)
-                    pClass = 'ggroupblack';
+                    pClass = "ggroupblack";
                 else if (pMile > 0)
-                    pClass = 'gmilestone';
+                    pClass = "gmilestone";
                 else
-                    pClass = 'gtaskblue';
+                    pClass = "gtaskblue";
                 // check for split tasks
-                var splits = exports.findXMLNode(ass[pID], 'TimephasedData');
-                if (typeof splits == 'undefined')
+                var splits = exports.findXMLNode(ass[pID], "TimephasedData");
+                if (typeof splits == "undefined")
                     j = 0;
                 else
                     j = splits.length;
                 var vSplitStart = pStart;
                 var vSplitEnd = pEnd;
                 var vSubCreated = false;
-                var vDepend = pDepend.replace(/,*[0-9]+[FS]F/g, '');
+                var vDepend = pDepend.replace(/,*[0-9]+[FS]F/g, "");
                 for (k = 0; k < j; k++) {
-                    var vDuration = exports.getXMLNodeValue(splits[k], 'Value', 2, '0');
+                    var vDuration = exports.getXMLNodeValue(splits[k], "Value", 2, "0");
                     //remove all text
-                    vDuration = '0' + vDuration.replace(/\D/g, '');
+                    vDuration = "0" + vDuration.replace(/\D/g, "");
                     vDuration *= 1;
-                    if ((vDuration == 0 && !vSubCreated) || (k + 1 == j && pGroup == 2)) {
+                    if ((vDuration == 0 && !vSubCreated) ||
+                        (k + 1 == j && pGroup == 2)) {
                         // No time booked in the given period (or last entry)
                         // Make sure the parent task is set as a combined group
                         pGroup = 2;
                         // Handle last loop
                         if (k + 1 == j)
-                            vDepend = pDepend.replace(/,*[0-9]+[FS]S/g, '');
+                            vDepend = pDepend.replace(/,*[0-9]+[FS]S/g, "");
                         // Now create a subtask
                         maxPID++;
-                        vSplitEnd = exports.getXMLNodeValue(splits[k], (k + 1 == j) ? 'Finish' : 'Start', 2, '');
-                        pGanttVar.AddTaskItem(new task_1.TaskItem(maxPID, pName, vSplitStart, vSplitEnd, 'gtaskblue', pLink, pMile, pRes, pComp, 0, pID, pOpen, vDepend, pCaption, pNotes, pGanttVar, pCost, pPlanStart, pPlanEnd, pDuration));
+                        vSplitEnd = exports.getXMLNodeValue(splits[k], k + 1 == j ? "Finish" : "Start", 2, "");
+                        pGanttVar.AddTaskItem(new task_1.TaskItem(maxPID, pName, vSplitStart, vSplitEnd, "gtaskblue", pLink, pMile, pRes, pComp, 0, pID, pOpen, vDepend, pCaption, pNotes, pGanttVar, pCost, pPlanStart, pPlanEnd, pDuration, pRemovable));
                         vSubCreated = true;
-                        vDepend = '';
+                        vDepend = "";
                     }
                     else if (vDuration != 0 && vSubCreated) {
-                        vSplitStart = exports.getXMLNodeValue(splits[k], 'Start', 2, '');
+                        vSplitStart = exports.getXMLNodeValue(splits[k], "Start", 2, "");
                         vSubCreated = false;
                     }
                 }
                 if (vSubCreated)
-                    pDepend = '';
+                    pDepend = "";
                 // Finally add the task
-                pGanttVar.AddTaskItem(new task_1.TaskItem(pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGanttVar, pCost, pPlanStart, pPlanEnd, pDuration));
+                pGanttVar.AddTaskItem(new task_1.TaskItem(pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGanttVar, pCost, pPlanStart, pPlanEnd, pDuration, pRemovable));
             }
         }
     }
     else {
-        Task = pXmlDoc.getElementsByTagName('task');
+        Task = pXmlDoc.getElementsByTagName("task");
         n = Task.length;
         for (i = 0; i < n; i++) {
             // optional parameters may not have an entry
             // Task ID must NOT be zero otherwise it will be skipped
-            var pID = exports.getXMLNodeValue(Task[i], 'pID', 1, 0);
+            var pID = exports.getXMLNodeValue(Task[i], "pID", 1, 0);
             if (pID != 0) {
-                var pName = exports.getXMLNodeValue(Task[i], 'pName', 2, 'No Task Name');
-                var pStart = exports.getXMLNodeValue(Task[i], 'pStart', 2, '');
-                var pEnd = exports.getXMLNodeValue(Task[i], 'pEnd', 2, '');
-                var pPlanStart = exports.getXMLNodeValue(Task[i], 'pPlanStart', 2, '');
-                var pPlanEnd = exports.getXMLNodeValue(Task[i], 'pPlanEnd', 2, '');
-                var pDuration = exports.getXMLNodeValue(Task[i], 'pDuration', 2, '');
-                var pLink = exports.getXMLNodeValue(Task[i], 'pLink', 2, '');
-                var pMile = exports.getXMLNodeValue(Task[i], 'pMile', 1, 0);
-                var pComp = exports.getXMLNodeValue(Task[i], 'pComp', 1, 0);
-                var pCost = exports.getXMLNodeValue(Task[i], 'pCost', 2, 0);
-                var pGroup = exports.getXMLNodeValue(Task[i], 'pGroup', 1, 0);
-                var pParent = exports.getXMLNodeValue(Task[i], 'pParent', 1, 0);
-                var pRes = exports.getXMLNodeValue(Task[i], 'pRes', 2, '');
-                var pOpen = exports.getXMLNodeValue(Task[i], 'pOpen', 1, 1);
-                var pDepend = exports.getXMLNodeValue(Task[i], 'pDepend', 2, '');
-                var pCaption = exports.getXMLNodeValue(Task[i], 'pCaption', 2, '');
-                var pNotes = exports.getXMLNodeValue(Task[i], 'pNotes', 2, '');
-                var pClass = exports.getXMLNodeValue(Task[i], 'pClass', 2, '');
-                if (typeof pClass == 'undefined') {
+                var pName = exports.getXMLNodeValue(Task[i], "pName", 2, "No Task Name");
+                var pStart = exports.getXMLNodeValue(Task[i], "pStart", 2, "");
+                var pEnd = exports.getXMLNodeValue(Task[i], "pEnd", 2, "");
+                var pPlanStart = exports.getXMLNodeValue(Task[i], "pPlanStart", 2, "");
+                var pPlanEnd = exports.getXMLNodeValue(Task[i], "pPlanEnd", 2, "");
+                var pDuration = exports.getXMLNodeValue(Task[i], "pDuration", 2, "");
+                var pLink = exports.getXMLNodeValue(Task[i], "pLink", 2, "");
+                var pMile = exports.getXMLNodeValue(Task[i], "pMile", 1, 0);
+                var pComp = exports.getXMLNodeValue(Task[i], "pComp", 1, 0);
+                var pCost = exports.getXMLNodeValue(Task[i], "pCost", 2, 0);
+                var pGroup = exports.getXMLNodeValue(Task[i], "pGroup", 1, 0);
+                var pRemovable = exports.getXMLNodeValue(Task[i], "pRemovable", 1, 0);
+                var pParent = exports.getXMLNodeValue(Task[i], "pParent", 1, 0);
+                var pRes = exports.getXMLNodeValue(Task[i], "pRes", 2, "");
+                var pOpen = exports.getXMLNodeValue(Task[i], "pOpen", 1, 1);
+                var pDepend = exports.getXMLNodeValue(Task[i], "pDepend", 2, "");
+                var pCaption = exports.getXMLNodeValue(Task[i], "pCaption", 2, "");
+                var pNotes = exports.getXMLNodeValue(Task[i], "pNotes", 2, "");
+                var pClass = exports.getXMLNodeValue(Task[i], "pClass", 2, "");
+                if (typeof pClass == "undefined") {
                     if (pGroup > 0)
-                        pClass = 'ggroupblack';
+                        pClass = "ggroupblack";
                     else if (pMile > 0)
-                        pClass = 'gmilestone';
+                        pClass = "gmilestone";
                     else
-                        pClass = 'gtaskblue';
+                        pClass = "gtaskblue";
                 }
                 // Finally add the task
-                pGanttVar.AddTaskItem(new task_1.TaskItem(pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGanttVar, pCost, pPlanStart, pPlanEnd, pDuration));
+                pGanttVar.AddTaskItem(new task_1.TaskItem(pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGanttVar, pCost, pPlanStart, pPlanEnd, pDuration, pRemovable));
             }
         }
     }
@@ -6189,14 +6241,14 @@ exports.getXMLProject = function () {
     for (var i = 0; i < this.vTaskList.length; i++) {
         vProject += this.getXMLTask(i, true);
     }
-    vProject += '</project>';
+    vProject += "</project>";
     return vProject;
 };
 exports.getXMLTask = function (pID, pIdx) {
     var i = 0;
     var vIdx = -1;
-    var vTask = '';
-    var vOutFrmt = date_utils_1.parseDateFormatStr(this.getDateInputFormat() + ' HH:MI:SS');
+    var vTask = "";
+    var vOutFrmt = date_utils_1.parseDateFormatStr(this.getDateInputFormat() + " HH:MI:SS");
     if (pIdx === true)
         vIdx = pID;
     else {
@@ -6209,38 +6261,56 @@ exports.getXMLTask = function (pID, pIdx) {
     }
     if (vIdx >= 0 && vIdx < this.vTaskList.length) {
         /* Simplest way to return case sensitive node names is to just build a string */
-        vTask = '<task>';
-        vTask += '<pID>' + this.vTaskList[vIdx].getID() + '</pID>';
-        vTask += '<pName>' + this.vTaskList[vIdx].getName() + '</pName>';
-        vTask += '<pStart>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getStart(), vOutFrmt, this.vLangs[this.vLang]) + '</pStart>';
-        vTask += '<pEnd>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getEnd(), vOutFrmt, this.vLangs[this.vLang]) + '</pEnd>';
-        vTask += '<pPlanStart>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getPlanStart(), vOutFrmt, this.vLangs[this.vLang]) + '</pPlanStart>';
-        vTask += '<pPlanEnd>' + date_utils_1.formatDateStr(this.vTaskList[vIdx].getPlanEnd(), vOutFrmt, this.vLangs[this.vLang]) + '</pPlanEnd>';
-        vTask += '<pDuration>' + this.vTaskList[vIdx].getDuration() + '</pDuration>';
-        vTask += '<pClass>' + this.vTaskList[vIdx].getClass() + '</pClass>';
-        vTask += '<pLink>' + this.vTaskList[vIdx].getLink() + '</pLink>';
-        vTask += '<pMile>' + this.vTaskList[vIdx].getMile() + '</pMile>';
-        if (this.vTaskList[vIdx].getResource() != '\u00A0')
-            vTask += '<pRes>' + this.vTaskList[vIdx].getResource() + '</pRes>';
-        vTask += '<pComp>' + this.vTaskList[vIdx].getCompVal() + '</pComp>';
-        vTask += '<pCost>' + this.vTaskList[vIdx].getCost() + '</pCost>';
-        vTask += '<pGroup>' + this.vTaskList[vIdx].getGroup() + '</pGroup>';
-        vTask += '<pParent>' + this.vTaskList[vIdx].getParent() + '</pParent>';
-        vTask += '<pOpen>' + this.vTaskList[vIdx].getOpen() + '</pOpen>';
-        vTask += '<pDepend>';
+        vTask = "<task>";
+        vTask += "<pID>" + this.vTaskList[vIdx].getID() + "</pID>";
+        vTask += "<pName>" + this.vTaskList[vIdx].getName() + "</pName>";
+        vTask +=
+            "<pStart>" +
+                date_utils_1.formatDateStr(this.vTaskList[vIdx].getStart(), vOutFrmt, this.vLangs[this.vLang]) +
+                "</pStart>";
+        vTask +=
+            "<pEnd>" +
+                date_utils_1.formatDateStr(this.vTaskList[vIdx].getEnd(), vOutFrmt, this.vLangs[this.vLang]) +
+                "</pEnd>";
+        vTask +=
+            "<pPlanStart>" +
+                date_utils_1.formatDateStr(this.vTaskList[vIdx].getPlanStart(), vOutFrmt, this.vLangs[this.vLang]) +
+                "</pPlanStart>";
+        vTask +=
+            "<pPlanEnd>" +
+                date_utils_1.formatDateStr(this.vTaskList[vIdx].getPlanEnd(), vOutFrmt, this.vLangs[this.vLang]) +
+                "</pPlanEnd>";
+        vTask +=
+            "<pDuration>" + this.vTaskList[vIdx].getDuration() + "</pDuration>";
+        vTask += "<pClass>" + this.vTaskList[vIdx].getClass() + "</pClass>";
+        vTask += "<pLink>" + this.vTaskList[vIdx].getLink() + "</pLink>";
+        vTask += "<pMile>" + this.vTaskList[vIdx].getMile() + "</pMile>";
+        if (this.vTaskList[vIdx].getResource() != "\u00A0")
+            vTask += "<pRes>" + this.vTaskList[vIdx].getResource() + "</pRes>";
+        vTask += "<pComp>" + this.vTaskList[vIdx].getCompVal() + "</pComp>";
+        vTask += "<pCost>" + this.vTaskList[vIdx].getCost() + "</pCost>";
+        vTask += "<pGroup>" + this.vTaskList[vIdx].getGroup() + "</pGroup>";
+        vTask +=
+            "<pRemovable>" +
+                this.vTaskList[vIdx].getRemovable() +
+                "</pRemovable>";
+        vTask += "<pParent>" + this.vTaskList[vIdx].getParent() + "</pParent>";
+        vTask += "<pOpen>" + this.vTaskList[vIdx].getOpen() + "</pOpen>";
+        vTask += "<pDepend>";
         var vDepList = this.vTaskList[vIdx].getDepend();
         for (i = 0; i < vDepList.length; i++) {
             if (i > 0)
-                vTask += ',';
+                vTask += ",";
             if (vDepList[i] > 0)
                 vTask += vDepList[i] + this.vTaskList[vIdx].getDepType()[i];
         }
-        vTask += '</pDepend>';
-        vTask += '<pCaption>' + this.vTaskList[vIdx].getCaption() + '</pCaption>';
+        vTask += "</pDepend>";
+        vTask +=
+            "<pCaption>" + this.vTaskList[vIdx].getCaption() + "</pCaption>";
         var vTmpFrag = document.createDocumentFragment();
-        var vTmpDiv = draw_utils_1.newNode(vTmpFrag, 'div', null, null, this.vTaskList[vIdx].getNotes().innerHTML);
-        vTask += '<pNotes>' + vTmpDiv.innerHTML + '</pNotes>';
-        vTask += '</task>';
+        var vTmpDiv = draw_utils_1.newNode(vTmpFrag, "div", null, null, this.vTaskList[vIdx].getNotes().innerHTML);
+        vTask += "<pNotes>" + vTmpDiv.innerHTML + "</pNotes>";
+        vTask += "</task>";
     }
     return vTask;
 };

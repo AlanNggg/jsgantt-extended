@@ -11,7 +11,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addDragAndDropListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
+exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addRemoveListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addDragAndDropListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
 var task_1 = require("./task");
 var general_utils_1 = require("./utils/general_utils");
 // Function to open/close and hide/show children of specified task
@@ -468,6 +468,12 @@ exports.addFolderListeners = function (pGanttChart, pObj, pID) {
         exports.updateGridHeaderWidth(pGanttChart);
     }, pObj);
 };
+exports.addRemoveListeners = function (pGanttChart, pObj, pID) {
+    exports.addListener("click", function () {
+        pGanttChart.RemoveTaskItem(pID);
+        pGanttChart.Draw();
+    }, pObj);
+};
 exports.addFormatListeners = function (pGanttChart, pFormat, pObj) {
     exports.addListener("click", function () {
         general_utils_1.changeFormat(pFormat, pGanttChart);
@@ -486,6 +492,7 @@ exports.addScrollListeners = function (pGanttChart) {
 exports.addListenerClickCell = function (vTmpCell, vEvents, task, column) {
     exports.addListener("click", function (e) {
         if (e.target.classList.contains("gfoldercollapse") === false &&
+            e.target.classList.contains("gtaskremove") === false &&
             vEvents[column] &&
             typeof vEvents[column] === "function") {
             vEvents[column](task, e, vTmpCell, column);
@@ -572,5 +579,6 @@ var vColumnsNames = {
     depend: "pDepend",
     caption: "pCaption",
     note: "pNotes",
+    removable: "pRemovable",
 };
 //# sourceMappingURL=events.js.map

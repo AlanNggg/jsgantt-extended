@@ -64,13 +64,14 @@ exports.TaskItemObject = function (object) {
     general_utils_1.internalProperties.forEach(function (property) {
         delete pDataObject[property];
     });
-    return new exports.TaskItem(object.pID, object.pName, object.pStart, object.pEnd, object.pClass, object.pLink, object.pMile, object.pRes, object.pComp, object.pGroup, object.pParent, object.pOpen, object.pDepend, object.pCaption, object.pNotes, object.pGantt, object.pCost, object.pPlanStart, object.pPlanEnd, object.pDuration, object.pBarText, object);
+    return new exports.TaskItem(object.pID, object.pName, object.pStart, object.pEnd, object.pClass, object.pLink, object.pMile, object.pRes, object.pComp, object.pGroup, object.pParent, object.pOpen, object.pDepend, object.pCaption, object.pNotes, object.pGantt, object.pCost, object.pPlanStart, object.pPlanEnd, object.pDuration, object.pRemovable, object.pBarText, object);
 };
-exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt, pCost, pPlanStart, pPlanEnd, pDuration, pBarText, pDataObject) {
+exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRes, pComp, pGroup, pParent, pOpen, pDepend, pCaption, pNotes, pGantt, pCost, pPlanStart, pPlanEnd, pDuration, pRemovable, pBarText, pDataObject) {
     if (pCost === void 0) { pCost = null; }
     if (pPlanStart === void 0) { pPlanStart = null; }
     if (pPlanEnd === void 0) { pPlanEnd = null; }
     if (pDuration === void 0) { pDuration = null; }
+    if (pRemovable === void 0) { pRemovable = null; }
     if (pBarText === void 0) { pBarText = null; }
     if (pDataObject === void 0) { pDataObject = null; }
     var vGantt = pGantt ? pGantt : this;
@@ -92,6 +93,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     var vComp = parseFloat(document.createTextNode(pComp).data);
     var vCost = parseInt(document.createTextNode(pCost).data);
     var vGroup = parseInt(document.createTextNode(pGroup).data);
+    var vRemovable = parseInt(document.createTextNode(pRemovable).data);
     var vDataObject = pDataObject;
     var vCompVal;
     var parent = document.createTextNode(pParent).data;
@@ -411,6 +413,9 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
     this.getGroup = function () {
         return vGroup;
     };
+    this.getRemovable = function () {
+        return vRemovable;
+    };
     this.getOpen = function () {
         return vOpen;
     };
@@ -614,6 +619,17 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             vGroup = parseInt(document.createTextNode(pGroup).data);
         }
     };
+    this.setRemovable = function (pRemovable) {
+        if (pRemovable === true || pRemovable === "true") {
+            vRemovable = 1;
+        }
+        else if (pRemovable === false || pRemovable === "false") {
+            vRemovable = 0;
+        }
+        else {
+            vRemovable = parseInt(document.createTextNode(pRemovable).data);
+        }
+    };
     this.setBarText = function (pBarText) {
         if (pBarText)
             vBarText = pBarText;
@@ -670,7 +686,7 @@ exports.TaskItem = function (pID, pName, pStart, pEnd, pClass, pLink, pMile, pRe
             pComp: vComp,
             pCost: vCost,
             pGroup: vGroup,
-            pDataObjec: vDataObject,
+            pDataObject: vDataObject,
         };
     };
 };

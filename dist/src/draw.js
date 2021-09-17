@@ -56,6 +56,7 @@ exports.GanttChart = function (pDiv, pFormat) {
         6: true,
     };
     this.vEventClickCollapse = null;
+    this.vEventClickRemove = null;
     this.vEventClickRow = null;
     this.vEvents = {
         taskname: null,
@@ -227,12 +228,20 @@ exports.GanttChart = function (pDiv, pFormat) {
                 var task_2 = this_1.vTaskList[i];
                 var vEventClickRow_1 = this_1.vEventClickRow;
                 var vEventClickCollapse_1 = this_1.vEventClickCollapse;
+                var vEventClickRemove_1 = this_1.vEventClickRemove;
                 events_1.addListener("click", function (e) {
                     if (e.target.classList.contains("gfoldercollapse") ===
-                        false) {
+                        false &&
+                        e.target.classList.contains("gtaskremove") === false) {
                         if (vEventClickRow_1 &&
                             typeof vEventClickRow_1 === "function") {
                             vEventClickRow_1(task_2);
+                        }
+                    }
+                    else if (e.target.classList.contains("gtaskremove") === true) {
+                        if (vEventClickRemove_1 &&
+                            typeof vEventClickRemove_1 === "function") {
+                            vEventClickRemove_1(task_2);
                         }
                     }
                     else {
@@ -250,6 +259,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                     var divTask = document.createElement("span");
                     divTask.innerHTML = "\u00A0" + this_1.vTaskList[i].getName();
                     vTmpDiv.appendChild(divTask);
+                    if (this_1.vTaskList[i].getRemovable() === 1) {
+                        var vTmpSpan_1 = draw_utils_1.newNode(vTmpDiv, "span", this_1.vDivId + "remove_" + vID, "gtaskremove", "x");
+                        events_1.addRemoveListeners(this_1, vTmpSpan_1, vID);
+                    }
                     // const text = makeInput(this.vTaskList[i].getName(), this.vEditable, 'text');
                     // vTmpDiv.appendChild(document.createNode(text));
                     var callback = function (task, e) { return task.setName(e.target.value); };
@@ -260,6 +273,10 @@ exports.GanttChart = function (pDiv, pFormat) {
                     vCellContents += "\u00A0\u00A0\u00A0\u00A0";
                     var text = draw_utils_1.makeInput(this_1.vTaskList[i].getName(), this_1.vEditable, "text");
                     var vTmpDiv = draw_utils_1.newNode(vTmpCell_1, "div", null, null, vCellContents + text);
+                    if (this_1.vTaskList[i].getRemovable() === 1) {
+                        var vTmpSpan = draw_utils_1.newNode(vTmpDiv, "span", this_1.vDivId + "remove_" + vID, "gtaskremove", "x");
+                        events_1.addRemoveListeners(this_1, vTmpSpan, vID);
+                    }
                     var callback = function (task, e) { return task.setName(e.target.value); };
                     events_1.addListenerInputCell(vTmpCell_1, this_1.vEventsChange, callback, this_1.vTaskList, i, "taskname", this_1.Draw.bind(this_1));
                     events_1.addListenerClickCell(vTmpCell_1, this_1.vEvents, this_1.vTaskList[i], "taskname");

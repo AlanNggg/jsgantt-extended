@@ -56,12 +56,12 @@ exports.parseJSON = function (pFile, pGanttVar, vDebug, redrawAfter) {
                     jsonObj = _a.sent();
                     if (vDebug) {
                         bd = new Date();
-                        console.info('before jsonparse', bd);
+                        console.info("before jsonparse", bd);
                     }
                     exports.addJSONTask(pGanttVar, jsonObj);
                     if (this.vDebug) {
                         ad = new Date();
-                        console.info('after addJSONTask', ad, (ad.getTime() - bd.getTime()));
+                        console.info("after addJSONTask", ad, ad.getTime() - bd.getTime());
                     }
                     if (redrawAfter) {
                         pGanttVar.Draw();
@@ -83,102 +83,107 @@ exports.addJSONTask = function (pGanttVar, pJsonObj) {
         var planstart = void 0;
         var planend = void 0;
         var itemClass = void 0;
-        var link = '';
+        var link = "";
         var milestone = 0;
-        var resourceName = '';
+        var resourceName = "";
         var completion = void 0;
         var group = 0;
         var parent_1 = void 0;
         var open_1 = void 0;
-        var dependsOn = '';
-        var caption = '';
-        var notes = '';
+        var dependsOn = "";
+        var caption = "";
+        var notes = "";
         var cost = void 0;
-        var duration = '';
-        var bartext = '';
+        var duration = "";
+        var removable = 0;
+        var bartext = "";
         var additionalObject = {};
         for (var prop in pJsonObj[index]) {
             var property = prop;
             var value = pJsonObj[index][property];
             switch (property.toLowerCase()) {
-                case 'pid':
-                case 'id':
+                case "pid":
+                case "id":
                     id = value;
                     break;
-                case 'pname':
-                case 'name':
+                case "pname":
+                case "name":
                     name_1 = value;
                     break;
-                case 'pstart':
-                case 'start':
+                case "pstart":
+                case "start":
                     start = value;
                     break;
-                case 'pend':
-                case 'end':
+                case "pend":
+                case "end":
                     end = value;
                     break;
-                case 'pplanstart':
-                case 'planstart':
+                case "pplanstart":
+                case "planstart":
                     planstart = value;
                     break;
-                case 'pplanend':
-                case 'planend':
+                case "pplanend":
+                case "planend":
                     planend = value;
                     break;
-                case 'pclass':
-                case 'class':
+                case "pclass":
+                case "class":
                     itemClass = value;
                     break;
-                case 'plink':
-                case 'link':
+                case "plink":
+                case "link":
                     link = value;
                     break;
-                case 'pmile':
-                case 'mile':
+                case "pmile":
+                case "mile":
                     milestone = value;
                     break;
-                case 'pres':
-                case 'res':
+                case "pres":
+                case "res":
                     resourceName = value;
                     break;
-                case 'pcomp':
-                case 'comp':
+                case "pcomp":
+                case "comp":
                     completion = value;
                     break;
-                case 'pgroup':
-                case 'group':
+                case "pgroup":
+                case "group":
                     group = value;
                     break;
-                case 'pparent':
-                case 'parent':
+                case "premovable":
+                case "removable":
+                    removable = value;
+                    break;
+                case "pparent":
+                case "parent":
                     parent_1 = value;
                     break;
-                case 'popen':
-                case 'open':
+                case "popen":
+                case "open":
                     open_1 = value;
                     break;
-                case 'pdepend':
-                case 'depend':
+                case "pdepend":
+                case "depend":
                     dependsOn = value;
                     break;
-                case 'pcaption':
-                case 'caption':
+                case "pcaption":
+                case "caption":
                     caption = value;
                     break;
-                case 'pnotes':
-                case 'notes':
+                case "pnotes":
+                case "notes":
                     notes = value;
                     break;
-                case 'pcost':
-                case 'cost':
+                case "pcost":
+                case "cost":
                     cost = value;
                     break;
-                case 'duration':
-                case 'pduration':
+                case "duration":
+                case "pduration":
                     duration = value;
                     break;
-                case 'bartext':
-                case 'pbartext':
+                case "bartext":
+                case "pbartext":
                     bartext = value;
                     break;
                 default:
@@ -186,7 +191,7 @@ exports.addJSONTask = function (pGanttVar, pJsonObj) {
             }
         }
         //if (id != undefined && !isNaN(parseInt(id)) && isFinite(id) && name && start && end && itemClass && completion != undefined && !isNaN(parseFloat(completion)) && isFinite(completion) && !isNaN(parseInt(parent)) && isFinite(parent)) {
-        pGanttVar.AddTaskItem(new task_1.TaskItem(id, name_1, start, end, itemClass, link, milestone, resourceName, completion, group, parent_1, open_1, dependsOn, caption, notes, pGanttVar, cost, planstart, planend, duration, bartext, additionalObject));
+        pGanttVar.AddTaskItem(new task_1.TaskItem(id, name_1, start, end, itemClass, link, milestone, resourceName, completion, group, parent_1, open_1, dependsOn, caption, notes, pGanttVar, cost, planstart, planend, duration, removable, bartext, additionalObject));
         //}
     }
 };
