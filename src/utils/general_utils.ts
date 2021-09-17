@@ -206,7 +206,6 @@ export const computeStartEndDate = function (
     let x2InUnits = newEndX - curEndX;
     let newEndDate;
 
-    console.log(newStartX, curStartX, newEndX, curEndX);
     if (pFormat == "day") {
         // by day
         if (!pShowWeekends) {
@@ -671,7 +670,6 @@ export const getSnapPosition = function (vFormat, vColWidth, dx) {
             (rem < (vColWidth + DAY_CELL_MARGIN_WIDTH) / 2
                 ? 0
                 : Math.ceil(vColWidth + DAY_CELL_MARGIN_WIDTH));
-        console.log("position ", vColWidth + DAY_CELL_MARGIN_WIDTH, position);
     } else if (vFormat == "week") {
         // by day
         rem = dx % ((vColWidth + WEEK_CELL_MARGIN_WIDTH) / 7);
@@ -709,8 +707,6 @@ export const getSnapPosition = function (vFormat, vColWidth, dx) {
                 ? 0
                 : Math.ceil((vColWidth + HOUR_CELL_MARGIN_WIDTH) / 60));
     }
-
-    console.log(dx, rem);
 
     return position;
 };

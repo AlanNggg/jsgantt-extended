@@ -1141,7 +1141,7 @@ export const processRows = function (
 
 export const updateBarPosition = (taskBarContainer, taskBar, startX, endX) => {
     const width = endX - startX;
-    console.log(width);
+
     if (startX) {
         taskBarContainer.style.left = startX + "px";
     }

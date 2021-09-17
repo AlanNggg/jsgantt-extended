@@ -415,8 +415,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                 parentBarId = +taskBar.id.match(/(\d+)(?!.*\d)/)[0];
                 barBeingDragged = parentBarId;
 
-                console.log(pGanttChart.getList()[0]);
-
                 bars = pGanttChart
                     .getList()
                     .filter(
@@ -433,8 +431,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             ? taskItem.getEndX()
                             : taskItem.getPlanEndX(),
                     }));
-
-                console.log("bars ", bars);
             }
         },
         pObj1
@@ -458,9 +454,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                 if (isResizingLeft) {
                     if (bar.getID() === parentBarId) {
                         const newStartX = bar.startX + finaldx;
-                        const originalStartX = bar.startX;
-
-                        console.log(newStartX, originalStartX);
 
                         if (!isPlanTaskBar) {
                             updateBarPosition(
@@ -484,9 +477,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                 } else if (isResizingRight) {
                     if (bar.getID() === parentBarId) {
                         const newEndX = bar.endX + finaldx;
-                        const originalEndX = bar.endX;
-
-                        console.log(newEndX, originalEndX);
 
                         if (!isPlanTaskBar) {
                             updateBarPosition(
@@ -498,10 +488,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
 
                             bar.setEndX(newEndX);
                         } else {
-                            console.log(
-                                "bar.getPlanTaskDiv()",
-                                bar.getPlanTaskDiv()
-                            );
                             updateBarPosition(
                                 bar.getPlanBarDiv(),
                                 bar.getPlanTaskDiv(),
@@ -529,7 +515,6 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
             if (isResizingLeft || isResizingRight) {
                 bars.forEach((bar) => {
                     if (!isPlanTaskBar) {
-                        console.log();
                         const { newStartDate, newEndDate } =
                             computeStartEndDate(
                                 bar.getStart(),
