@@ -270,6 +270,9 @@ exports.includeGetSet = function () {
     this.setEventClickCollapse = function (fn) {
         this.vEventClickCollapse = fn;
     };
+    this.setEventClickRemove = function (fn) {
+        this.vEventClickRemove = fn;
+    };
     this.setResources = function (resources) {
         this.vResources = resources;
     };
@@ -483,6 +486,9 @@ exports.includeGetSet = function () {
     };
     this.getEventClickCollapse = function () {
         return this.vEventClickCollapse;
+    };
+    this.getEventClickRemove = function () {
+        return this.vEventClickRemove;
     };
     this.getResources = function () {
         return this.vResources;
