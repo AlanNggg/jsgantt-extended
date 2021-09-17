@@ -101,6 +101,7 @@ function start(e) {
             vShowPlanEndDate,
             vAdditionalHeaders,
             vTotalHeight,
+            vRowHeight: 36,
             vMinDate,
             vMaxDate,
             // EVENTs
@@ -136,6 +137,7 @@ function start(e) {
             },
             vEventClickRow: console.log,
             vEventClickCollapse: console.log,
+            vEventClickRemove: console.log,
 
             vResources: [
                 { id: 0, name: "Anybody" },

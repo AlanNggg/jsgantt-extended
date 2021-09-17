@@ -209,6 +209,7 @@ span.gtaskremove {
     font-size: 12px;
     float: right;
     margin-right: 5px;
+    margin-left: 10px;
 }
 
 .gtasktableh,
@@ -948,7 +949,7 @@ td.gspanning div {
 .gcharttable tr,
 .gcharttableh tr,
 .gtasktable tr {
-    height: 22px !important;
+    height: 22px;
 }
 
 .gtasktableouterwrapper {
