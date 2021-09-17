@@ -148,7 +148,6 @@ exports.computeStartEndDate = function (curStart, curEnd, newStartX, curStartX, 
     var newStartDate;
     var x2InUnits = newEndX - curEndX;
     var newEndDate;
-    console.log(newStartX, curStartX, newEndX, curEndX);
     if (pFormat == "day") {
         // by day
         if (!pShowWeekends) {
@@ -560,7 +559,6 @@ exports.getSnapPosition = function (vFormat, vColWidth, dx) {
                 (rem < (vColWidth + DAY_CELL_MARGIN_WIDTH) / 2
                     ? 0
                     : Math.ceil(vColWidth + DAY_CELL_MARGIN_WIDTH));
-        console.log("position ", vColWidth + DAY_CELL_MARGIN_WIDTH, position);
     }
     else if (vFormat == "week") {
         // by day
@@ -602,7 +600,6 @@ exports.getSnapPosition = function (vFormat, vColWidth, dx) {
                     ? 0
                     : Math.ceil((vColWidth + HOUR_CELL_MARGIN_WIDTH) / 60));
     }
-    console.log(dx, rem);
     return position;
 };
 exports.calculateStartEndFromDepend = function (tasksList) { };

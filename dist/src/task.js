@@ -970,7 +970,6 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
 };
 exports.updateBarPosition = function (taskBarContainer, taskBar, startX, endX) {
     var width = endX - startX;
-    console.log(width);
     if (startX) {
         taskBarContainer.style.left = startX + "px";
     }

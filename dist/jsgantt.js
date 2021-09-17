@@ -1525,7 +1525,6 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
             yOnStart = e.y;
             parentBarId = +taskBar.id.match(/(\d+)(?!.*\d)/)[0];
             barBeingDragged = parentBarId;
-            console.log(pGanttChart.getList()[0]);
             bars = pGanttChart
                 .getList()
                 .filter(function (taskItem) {
@@ -1537,7 +1536,6 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     : taskItem.getPlanStartX(), endX: !isPlanTaskBar
                     ? taskItem.getEndX()
                     : taskItem.getPlanEndX() })); });
-            console.log("bars ", bars);
         }
     }, pObj1);
     exports.addListener("mousemove", function (e) {
@@ -1550,8 +1548,6 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
             if (isResizingLeft) {
                 if (bar.getID() === parentBarId) {
                     var newStartX = bar.startX + finaldx;
-                    var originalStartX = bar.startX;
-                    console.log(newStartX, originalStartX);
                     if (!isPlanTaskBar) {
                         task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), newStartX, bar.endX);
                         bar.setStartX(newStartX);
@@ -1567,14 +1563,11 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
             else if (isResizingRight) {
                 if (bar.getID() === parentBarId) {
                     var newEndX = bar.endX + finaldx;
-                    var originalEndX = bar.endX;
-                    console.log(newEndX, originalEndX);
                     if (!isPlanTaskBar) {
                         task_1.updateBarPosition(bar.getBarDiv(), bar.getTaskDiv(), bar.startX, newEndX);
                         bar.setEndX(newEndX);
                     }
                     else {
-                        console.log("bar.getPlanTaskDiv()", bar.getPlanTaskDiv());
                         task_1.updateBarPosition(bar.getPlanBarDiv(), bar.getPlanTaskDiv(), bar.startX, newEndX);
                         bar.setPlanEndX(newEndX);
                     }
@@ -1592,7 +1585,6 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
         if (isResizingLeft || isResizingRight) {
             bars.forEach(function (bar) {
                 if (!isPlanTaskBar) {
-                    console.log();
                     var _a = general_utils_1.computeStartEndDate(bar.getStart(), bar.getEnd(), bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
                     bar.setStart(newStartDate);
                     bar.setEnd(newEndDate);
@@ -4812,7 +4804,6 @@ exports.processRows = function (pList, pID, pRow, pLevel, pOpen, pUseSort, vDebu
 };
 exports.updateBarPosition = function (taskBarContainer, taskBar, startX, endX) {
     var width = endX - startX;
-    console.log(width);
     if (startX) {
         taskBarContainer.style.left = startX + "px";
     }
@@ -5482,7 +5473,6 @@ exports.computeStartEndDate = function (curStart, curEnd, newStartX, curStartX, 
     var newStartDate;
     var x2InUnits = newEndX - curEndX;
     var newEndDate;
-    console.log(newStartX, curStartX, newEndX, curEndX);
     if (pFormat == "day") {
         // by day
         if (!pShowWeekends) {
@@ -5894,7 +5884,6 @@ exports.getSnapPosition = function (vFormat, vColWidth, dx) {
                 (rem < (vColWidth + DAY_CELL_MARGIN_WIDTH) / 2
                     ? 0
                     : Math.ceil(vColWidth + DAY_CELL_MARGIN_WIDTH));
-        console.log("position ", vColWidth + DAY_CELL_MARGIN_WIDTH, position);
     }
     else if (vFormat == "week") {
         // by day
@@ -5936,7 +5925,6 @@ exports.getSnapPosition = function (vFormat, vColWidth, dx) {
                     ? 0
                     : Math.ceil((vColWidth + HOUR_CELL_MARGIN_WIDTH) / 60));
     }
-    console.log(dx, rem);
     return position;
 };
 exports.calculateStartEndFromDepend = function (tasksList) { };
