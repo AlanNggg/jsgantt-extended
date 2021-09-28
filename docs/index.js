@@ -252,7 +252,7 @@ function printChart() {
 }
 
 function editValue(list, task, event, cell, column) {
-    console.log(list, task, event, cell, column);
+    console.log("editValue", list, task, event, cell, column);
     const found = list.find((item) => item.pID == task.getOriginalID());
     if (!found) {
         return;

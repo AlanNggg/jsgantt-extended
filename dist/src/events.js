@@ -387,6 +387,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     if (pGanttChart.getEventsChange()["start"] &&
                         typeof pGanttChart.getEventsChange()["start"] ===
                             "function") {
+                        e.target.value = newStartDate;
                         pGanttChart
                             .getEventsChange()["start"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["start"]);
                     }
@@ -394,6 +395,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     if (pGanttChart.getEventsChange()["end"] &&
                         typeof pGanttChart.getEventsChange()["end"] ===
                             "function") {
+                        e.target.value = newEndDate;
                         pGanttChart
                             .getEventsChange()["end"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["end"]);
                     }
@@ -411,6 +413,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     bar.setPlanStart(newStartDate);
                     if (pGanttChart.getEventsChange()["planstart"] &&
                         typeof pGanttChart.getEventsChange()["planstart"] === "function") {
+                        e.target.value = newStartDate;
                         pGanttChart
                             .getEventsChange()["planstart"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planstart"]);
                     }
@@ -418,6 +421,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     if (pGanttChart.getEventsChange()["planend"] &&
                         typeof pGanttChart.getEventsChange()["planend"] ===
                             "function") {
+                        e.target.value = newEndDate;
                         pGanttChart
                             .getEventsChange()["planend"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planend"]);
                     }
