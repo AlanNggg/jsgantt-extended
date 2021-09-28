@@ -5549,6 +5549,7 @@ exports.computeStartEndDate = function (curStart, curEnd, newStartX, curStartX, 
     newEndDate = new Date(new Date(newEndDate.getTime() - newEndDate.getTimezoneOffset() * 60000)
         .toISOString()
         .split("T")[0]);
+    console.log({ newStartDate: newStartDate, newEndDate: newEndDate });
     return { newStartDate: newStartDate, newEndDate: newEndDate };
 };
 exports.getOffset = function (pStartDate, pEndDate, pColWidth, pFormat, pShowWeekends) {

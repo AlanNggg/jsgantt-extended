@@ -262,6 +262,7 @@ export const computeStartEndDate = function (
             .toISOString()
             .split("T")[0]
     );
+    console.log({ newStartDate, newEndDate })
 
     return { newStartDate, newEndDate };
 };
