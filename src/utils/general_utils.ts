@@ -249,21 +249,6 @@ export const computeStartEndDate = function (
         newEndDate = add(curEnd, x2InUnits, "minute");
     }
 
-    newStartDate = new Date(
-        new Date(
-            newStartDate.getTime() - newStartDate.getTimezoneOffset() * 60000
-        )
-            .toISOString()
-            .split("T")[0]
-    );
-
-    newEndDate = new Date(
-        new Date(newEndDate.getTime() - newEndDate.getTimezoneOffset() * 60000)
-            .toISOString()
-            .split("T")[0]
-    );
-    console.log({ newStartDate, newEndDate })
-
     return { newStartDate, newEndDate };
 };
 
