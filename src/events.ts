@@ -535,6 +535,7 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 "function"
                         ) {
                             e.target.value = newStartDate;
+                            e.target.dataset.value = newStartDate;
                             pGanttChart
                                 .getEventsChange()
                                 ["start"](
@@ -554,6 +555,7 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 "function"
                         ) {
                             e.target.value = newEndDate;
+                            e.target.dataset.value = newEndDate;
                             pGanttChart
                                 .getEventsChange()
                                 ["end"](
@@ -594,6 +596,7 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             ] === "function"
                         ) {
                             e.target.value = newStartDate;
+                            e.target.dataset.value = newStartDate;
                             pGanttChart
                                 .getEventsChange()
                                 ["planstart"](
@@ -613,6 +616,7 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 "function"
                         ) {
                             e.target.value = newEndDate;
+                            e.target.dataset.value = newEndDate;
                             pGanttChart
                                 .getEventsChange()
                                 ["planend"](

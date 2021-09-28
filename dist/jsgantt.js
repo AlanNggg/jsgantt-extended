@@ -1591,6 +1591,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                         typeof pGanttChart.getEventsChange()["start"] ===
                             "function") {
                         e.target.value = newStartDate;
+                        e.target.dataset.value = newStartDate;
                         pGanttChart
                             .getEventsChange()["start"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["start"]);
                     }
@@ -1599,6 +1600,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                         typeof pGanttChart.getEventsChange()["end"] ===
                             "function") {
                         e.target.value = newEndDate;
+                        e.target.dataset.value = newEndDate;
                         pGanttChart
                             .getEventsChange()["end"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["end"]);
                     }
@@ -1617,6 +1619,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                     if (pGanttChart.getEventsChange()["planstart"] &&
                         typeof pGanttChart.getEventsChange()["planstart"] === "function") {
                         e.target.value = newStartDate;
+                        e.target.dataset.value = newStartDate;
                         pGanttChart
                             .getEventsChange()["planstart"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planstart"]);
                     }
@@ -1625,6 +1628,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                         typeof pGanttChart.getEventsChange()["planend"] ===
                             "function") {
                         e.target.value = newEndDate;
+                        e.target.dataset.value = newEndDate;
                         pGanttChart
                             .getEventsChange()["planend"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planend"]);
                     }
