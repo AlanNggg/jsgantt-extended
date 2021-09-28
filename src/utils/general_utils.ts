@@ -250,16 +250,18 @@ export const computeStartEndDate = function (
     }
 
     newStartDate = new Date(
-        newStartDate.getTime() - newStartDate.getTimezoneOffset() * 60000
-    )
-        .toISOString()
-        .split("T")[0];
+        new Date(
+            newStartDate.getTime() - newStartDate.getTimezoneOffset() * 60000
+        )
+            .toISOString()
+            .split("T")[0]
+    );
 
     newEndDate = new Date(
-        newEndDate.getTime() - newEndDate.getTimezoneOffset() * 60000
-    )
-        .toISOString()
-        .split("T")[0];
+        new Date(newEndDate.getTime() - newEndDate.getTimezoneOffset() * 60000)
+            .toISOString()
+            .split("T")[0]
+    );
 
     return { newStartDate, newEndDate };
 };
