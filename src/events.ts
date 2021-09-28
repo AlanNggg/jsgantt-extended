@@ -528,7 +528,40 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 false
                             );
                         bar.setStart(newStartDate);
+
+                        if (
+                            pGanttChart.getEventsChange()["start"] &&
+                            typeof pGanttChart.getEventsChange()["start"] ===
+                                "function"
+                        ) {
+                            pGanttChart
+                                .getEventsChange()
+                                ["start"](
+                                    pGanttChart.getList(),
+                                    bar,
+                                    e,
+                                    bar.getTaskDiv(),
+                                    vColumnsNames["start"]
+                                );
+                        }
+
                         bar.setEnd(newEndDate);
+
+                        if (
+                            pGanttChart.getEventsChange()["end"] &&
+                            typeof pGanttChart.getEventsChange()["end"] ===
+                                "function"
+                        ) {
+                            pGanttChart
+                                .getEventsChange()
+                                ["end"](
+                                    pGanttChart.getList(),
+                                    bar,
+                                    e,
+                                    bar.getTaskDiv(),
+                                    vColumnsNames["end"]
+                                );
+                        }
 
                         if (bar.getID() === parentBarId) {
                             if (isResizingLeft) {
@@ -551,7 +584,41 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 false
                             );
                         bar.setPlanStart(newStartDate);
+
+                        if (
+                            pGanttChart.getEventsChange()["planstart"] &&
+                            typeof pGanttChart.getEventsChange()[
+                                "planstart"
+                            ] === "function"
+                        ) {
+                            pGanttChart
+                                .getEventsChange()
+                                ["planstart"](
+                                    pGanttChart.getList(),
+                                    bar,
+                                    e,
+                                    bar.getTaskDiv(),
+                                    vColumnsNames["planstart"]
+                                );
+                        }
+
                         bar.setPlanEnd(newEndDate);
+
+                        if (
+                            pGanttChart.getEventsChange()["planend"] &&
+                            typeof pGanttChart.getEventsChange()["planend"] ===
+                                "function"
+                        ) {
+                            pGanttChart
+                                .getEventsChange()
+                                ["planend"](
+                                    pGanttChart.getList(),
+                                    bar,
+                                    e,
+                                    bar.getTaskDiv(),
+                                    vColumnsNames["planend"]
+                                );
+                        }
 
                         if (bar.getID() === parentBarId) {
                             if (isResizingLeft) {
