@@ -529,49 +529,51 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             );
                         bar.setStart(newStartDate);
 
-                        if (
-                            pGanttChart.getEventsChange()["start"] &&
-                            typeof pGanttChart.getEventsChange()["start"] ===
-                                "function"
-                        ) {
-                            e.target.value = newStartDate;
-
-                            pGanttChart
-                                .getEventsChange()
-                                ["start"](
-                                    pGanttChart.getList(),
-                                    bar,
-                                    e,
-                                    bar.getTaskDiv(),
-                                    vColumnsNames["start"]
-                                );
-                        }
-
                         bar.setEnd(newEndDate);
-
-                        if (
-                            pGanttChart.getEventsChange()["end"] &&
-                            typeof pGanttChart.getEventsChange()["end"] ===
-                                "function"
-                        ) {
-                            e.target.value = newEndDate;
-
-                            pGanttChart
-                                .getEventsChange()
-                                ["end"](
-                                    pGanttChart.getList(),
-                                    bar,
-                                    e,
-                                    bar.getTaskDiv(),
-                                    vColumnsNames["end"]
-                                );
-                        }
 
                         if (bar.getID() === parentBarId) {
                             if (isResizingLeft) {
                                 pGanttChart.setScrollTo(bar.getStart());
+
+                                if (
+                                    pGanttChart.getEventsChange()["start"] &&
+                                    typeof pGanttChart.getEventsChange()[
+                                        "start"
+                                    ] === "function"
+                                ) {
+                                    e.target.value = newStartDate;
+
+                                    pGanttChart
+                                        .getEventsChange()
+                                        ["start"](
+                                            pGanttChart.getList(),
+                                            bar,
+                                            e,
+                                            bar.getTaskDiv(),
+                                            vColumnsNames["start"]
+                                        );
+                                }
                             } else if (isResizingRight) {
                                 pGanttChart.setScrollTo(bar.getEnd());
+
+                                if (
+                                    pGanttChart.getEventsChange()["end"] &&
+                                    typeof pGanttChart.getEventsChange()[
+                                        "end"
+                                    ] === "function"
+                                ) {
+                                    e.target.value = newEndDate;
+
+                                    pGanttChart
+                                        .getEventsChange()
+                                        ["end"](
+                                            pGanttChart.getList(),
+                                            bar,
+                                            e,
+                                            bar.getTaskDiv(),
+                                            vColumnsNames["end"]
+                                        );
+                                }
                             }
                         }
                     } else {
@@ -589,50 +591,53 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                             );
                         bar.setPlanStart(newStartDate);
 
-                        if (
-                            pGanttChart.getEventsChange()["planstart"] &&
-                            typeof pGanttChart.getEventsChange()[
-                                "planstart"
-                            ] === "function"
-                        ) {
-                            e.target.value = newStartDate;
-
-                            pGanttChart
-                                .getEventsChange()
-                                ["planstart"](
-                                    pGanttChart.getList(),
-                                    bar,
-                                    e,
-                                    bar.getTaskDiv(),
-                                    vColumnsNames["planstart"]
-                                );
-                        }
-
                         bar.setPlanEnd(newEndDate);
-
-                        if (
-                            pGanttChart.getEventsChange()["planend"] &&
-                            typeof pGanttChart.getEventsChange()["planend"] ===
-                                "function"
-                        ) {
-                            e.target.value = newEndDate;
-
-                            pGanttChart
-                                .getEventsChange()
-                                ["planend"](
-                                    pGanttChart.getList(),
-                                    bar,
-                                    e,
-                                    bar.getTaskDiv(),
-                                    vColumnsNames["planend"]
-                                );
-                        }
 
                         if (bar.getID() === parentBarId) {
                             if (isResizingLeft) {
                                 pGanttChart.setScrollTo(bar.getPlanStart());
+
+                                if (
+                                    pGanttChart.getEventsChange()[
+                                        "planstart"
+                                    ] &&
+                                    typeof pGanttChart.getEventsChange()[
+                                        "planstart"
+                                    ] === "function"
+                                ) {
+                                    e.target.value = newStartDate;
+
+                                    pGanttChart
+                                        .getEventsChange()
+                                        ["planstart"](
+                                            pGanttChart.getList(),
+                                            bar,
+                                            e,
+                                            bar.getTaskDiv(),
+                                            vColumnsNames["planstart"]
+                                        );
+                                }
                             } else if (isResizingRight) {
                                 pGanttChart.setScrollTo(bar.getPlanEnd());
+
+                                if (
+                                    pGanttChart.getEventsChange()["planend"] &&
+                                    typeof pGanttChart.getEventsChange()[
+                                        "planend"
+                                    ] === "function"
+                                ) {
+                                    e.target.value = newEndDate;
+
+                                    pGanttChart
+                                        .getEventsChange()
+                                        ["planend"](
+                                            pGanttChart.getList(),
+                                            bar,
+                                            e,
+                                            bar.getTaskDiv(),
+                                            vColumnsNames["planend"]
+                                        );
+                                }
                             }
                         }
                     }

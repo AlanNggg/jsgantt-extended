@@ -804,6 +804,7 @@ exports.AddTaskItemObject = function (object) {
     if (!object.pGantt) {
         object.pGantt = this;
     }
+    console.log("Gantt", object.pGantt, this);
     return this.AddTaskItem(exports.TaskItemObject(object));
 };
 exports.RemoveTaskItem = function (pID) {
