@@ -604,6 +604,5 @@ var vColumnsNames = {
     caption: "pCaption",
     note: "pNotes",
     removable: "pRemovable",
-    dataObject: "pDataObject",
 };
 //# sourceMappingURL=events.js.map

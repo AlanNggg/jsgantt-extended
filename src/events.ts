@@ -898,5 +898,4 @@ const vColumnsNames = {
     caption: "pCaption",
     note: "pNotes",
     removable: "pRemovable",
-    dataObject: "pDataObject",
 };

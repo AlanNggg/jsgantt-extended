@@ -1834,7 +1834,6 @@ var vColumnsNames = {
     caption: "pCaption",
     note: "pNotes",
     removable: "pRemovable",
-    dataObject: "pDataObject",
 };
 
 },{"./task":10,"./utils/date_utils":11,"./utils/general_utils":13}],6:[function(require,module,exports){
