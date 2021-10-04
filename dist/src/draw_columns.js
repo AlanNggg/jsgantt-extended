@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.draw_task_headings = exports.draw_bottom = exports.draw_header = exports.COLUMN_ORDER = void 0;
 var date_utils_1 = require("./utils/date_utils");
@@ -106,7 +117,7 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
         events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], "cost");
     }
     if ("vAdditionalHeaders" === column && vAdditionalHeaders) {
-        for (var key in vAdditionalHeaders) {
+        var _loop_1 = function (key) {
             var header = vAdditionalHeaders[key];
             var css = header.class ? header.class : "gadditional-" + key;
             var data = vTaskList[i].getDataObject();
@@ -114,8 +125,14 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
             var text = draw_utils_1.makeInput(data ? data[key] : "", vEditable, "additional_" + key);
             vTmpDiv = draw_utils_1.newNode(vTmpCell, "div", null, null, text);
             events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], "additional_" + key);
-            // const callback = (task, e) => task.setCost(e.target.value);
-            events_1.addListenerInputCell(vTmpCell, vEventsChange, null, vTaskList, i, "additional_" + key);
+            var callback = function (task, e) {
+                var _a;
+                return task.setDataObject(__assign(__assign({}, vTaskList[i].getDataObject()), (_a = {}, _a[key] = e.target.value, _a)));
+            };
+            events_1.addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, "additional_" + key, Draw);
+        };
+        for (var key in vAdditionalHeaders) {
+            _loop_1(key);
         }
     }
     if ("vShowAddEntries" === column) {

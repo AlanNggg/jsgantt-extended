@@ -241,20 +241,28 @@ export const draw_header = function (
                 `additional_${key}`
             );
             vTmpDiv = newNode(vTmpCell, "div", null, null, text);
+
             addListenerClickCell(
                 vTmpCell,
                 vEvents,
                 vTaskList[i],
                 `additional_${key}`
             );
-            // const callback = (task, e) => task.setCost(e.target.value);
+
+            const callback = (task, e) =>
+                task.setDataObject({
+                    ...vTaskList[i].getDataObject(),
+                    [key]: e.target.value,
+                });
+
             addListenerInputCell(
                 vTmpCell,
                 vEventsChange,
-                null,
+                callback,
                 vTaskList,
                 i,
-                `additional_${key}`
+                `additional_${key}`,
+                Draw
             );
         }
     }

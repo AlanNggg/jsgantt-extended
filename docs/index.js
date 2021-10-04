@@ -116,6 +116,7 @@ function start(e) {
                 planend: console.log,
                 cost: console.log,
                 additional_category: console.log,
+                additional_sector: console.log,
                 beforeDraw: () => console.log("before draw listener"),
                 afterDraw: () => {
                     console.log("after draw listener");
@@ -134,6 +135,8 @@ function start(e) {
                 planstart: editValue,
                 planend: editValue,
                 cost: editValue,
+                additional_category: editValue,
+                additional_sector: editValue,
             },
             vEventClickRow: console.log,
             vEventClickCollapse: console.log,
