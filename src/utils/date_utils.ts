@@ -430,3 +430,11 @@ export const add = function (date, qty, scale) {
         values[6]
     );
 };
+
+export const getIsoDateString = function (value) {
+    value = new Date(value.getTime() - value.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split("T")[0];
+
+    return value;
+};

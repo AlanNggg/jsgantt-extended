@@ -1,4 +1,5 @@
 import { updateBarPosition } from "./task";
+import { getIsoDateString } from "./utils/date_utils";
 import {
     delayedHide,
     changeFormat,
@@ -527,9 +528,10 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 pGanttChart.vFormat,
                                 false
                             );
-                        bar.setStart(newStartDate);
 
-                        bar.setEnd(newEndDate);
+                        bar.setStart(getIsoDateString(newStartDate));
+
+                        bar.setEnd(getIsoDateString(newEndDate));
 
                         if (bar.getID() === parentBarId) {
                             if (isResizingLeft) {
@@ -589,9 +591,10 @@ export const addDragAndDropListeners = function (pGanttChart, pObj1) {
                                 pGanttChart.vFormat,
                                 false
                             );
-                        bar.setPlanStart(newStartDate);
 
-                        bar.setPlanEnd(newEndDate);
+                        bar.setPlanStart(getIsoDateString(newStartDate));
+
+                        bar.setPlanEnd(getIsoDateString(newEndDate));
 
                         if (bar.getID() === parentBarId) {
                             if (isResizingLeft) {

@@ -13,6 +13,7 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addListenerDependencies = exports.addListenerInputCell = exports.addListenerClickCell = exports.addScrollListeners = exports.addFormatListeners = exports.addRemoveListeners = exports.addFolderListeners = exports.updateGridHeaderWidth = exports.addThisRowListeners = exports.addDragAndDropListeners = exports.addTooltipListeners = exports.syncScroll = exports.removeListener = exports.addListener = exports.showToolTip = exports.mouseOut = exports.mouseOver = exports.show = exports.hide = exports.folder = void 0;
 var task_1 = require("./task");
+var date_utils_1 = require("./utils/date_utils");
 var general_utils_1 = require("./utils/general_utils");
 // Function to open/close and hide/show children of specified task
 exports.folder = function (pID, ganttObj) {
@@ -383,8 +384,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
             bars.forEach(function (bar) {
                 if (!isPlanTaskBar) {
                     var _a = general_utils_1.computeStartEndDate(bar.getStart(), bar.getEnd(), bar.getStartX(), bar.startX, bar.getEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _a.newStartDate, newEndDate = _a.newEndDate;
-                    bar.setStart(newStartDate);
-                    bar.setEnd(newEndDate);
+                    bar.setStart(date_utils_1.getIsoDateString(newStartDate));
+                    bar.setEnd(date_utils_1.getIsoDateString(newEndDate));
                     if (bar.getID() === parentBarId) {
                         if (isResizingLeft) {
                             pGanttChart.setScrollTo(bar.getStart());
@@ -408,8 +409,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                 }
                 else {
                     var _b = general_utils_1.computeStartEndDate(bar.getPlanStart(), bar.getPlanEnd(), bar.getPlanStartX(), bar.startX, bar.getPlanEndX(), bar.endX, vColWidth, pGanttChart.vFormat, false), newStartDate = _b.newStartDate, newEndDate = _b.newEndDate;
-                    bar.setPlanStart(newStartDate);
-                    bar.setPlanEnd(newEndDate);
+                    bar.setPlanStart(date_utils_1.getIsoDateString(newStartDate));
+                    bar.setPlanEnd(date_utils_1.getIsoDateString(newEndDate));
                     if (bar.getID() === parentBarId) {
                         if (isResizingLeft) {
                             pGanttChart.setScrollTo(bar.getPlanStart());

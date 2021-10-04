@@ -236,12 +236,107 @@ function clearTasks() {
 }
 
 function updateTasks() {
-    g.AddTaskItem(new JSGantt.TaskItem(1, 'Task Objects', '', '', 'ggroupblack', '', 0, 'Shlomy', 40, 1, 0, '', '', '', '', g));
-    g.AddTaskItem(new JSGantt.TaskItem(121, 'Constructor Proc', '2019-08-20', '2020-03-06', 'gtaskblue', '', 0, 'Brian T.', 60, 0, 1, 1, '', '', '', g));
-    g.AddTaskItem(new JSGantt.TaskItem(122, 'Task Variables', '2019-08-20', '2020-03-06', 'gtaskred', '', 0, 'Brian', 60, 0, 1, 1, 121, '', '', g));
-    g.AddTaskItem(new JSGantt.TaskItem(123, 'Task by Minute/Hour', '2019-08-20', '2020-03-06 12:00', 'gtaskyellow', '', 0, 'Ilan', 60, 0, 1, 1, '', '', '', g));
-    g.AddTaskItem(new JSGantt.TaskItem(124, 'Task Functions', '2019-08-20', '2020-03-06', 'gtaskred', '', 0, 'Anyone', 60, 0, 1, 1, '123', 'This is a caption', null, g));
-    g.Draw()
+    g.AddTaskItem(
+        new JSGantt.TaskItem(
+            1,
+            "Task Objects",
+            "",
+            "",
+            "ggroupblack",
+            "",
+            0,
+            "Shlomy",
+            40,
+            1,
+            0,
+            "",
+            "",
+            "",
+            "",
+            g
+        )
+    );
+    g.AddTaskItem(
+        new JSGantt.TaskItem(
+            121,
+            "Constructor Proc",
+            "2019-08-20",
+            "2020-03-06",
+            "gtaskblue",
+            "",
+            0,
+            "Brian T.",
+            60,
+            0,
+            1,
+            1,
+            "",
+            "",
+            "",
+            g
+        )
+    );
+    g.AddTaskItem(
+        new JSGantt.TaskItem(
+            122,
+            "Task Variables",
+            "2019-08-20",
+            "2020-03-06",
+            "gtaskred",
+            "",
+            0,
+            "Brian",
+            60,
+            0,
+            1,
+            1,
+            121,
+            "",
+            "",
+            g
+        )
+    );
+    g.AddTaskItem(
+        new JSGantt.TaskItem(
+            123,
+            "Task by Minute/Hour",
+            "2019-08-20",
+            "2020-03-06 12:00",
+            "gtaskyellow",
+            "",
+            0,
+            "Ilan",
+            60,
+            0,
+            1,
+            1,
+            "",
+            "",
+            "",
+            g
+        )
+    );
+    g.AddTaskItem(
+        new JSGantt.TaskItem(
+            124,
+            "Task Functions",
+            "2019-08-20",
+            "2020-03-06",
+            "gtaskred",
+            "",
+            0,
+            "Anyone",
+            60,
+            0,
+            1,
+            1,
+            "123",
+            "This is a caption",
+            null,
+            g
+        )
+    );
+    g.Draw();
 }
 
 function printTasksInConsole() {
@@ -261,9 +356,10 @@ function printChart() {
 }
 
 function editValue(list, task, event, cell, column) {
-    console.log("editValue", list, task, event, cell, column);
-    console.log("e.target.value", event.target.value);
     const found = list.find((item) => item.pID == task.getOriginalID());
+    console.log("e.target.value", event.target.value);
+    console.log("editValue", list, task, event, cell, column);
+    console.log("found", found);
     if (!found) {
         return;
     } else {

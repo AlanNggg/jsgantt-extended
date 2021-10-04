@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.add = exports.getIsoWeek = exports.parseDateFormatStr = exports.formatDateStr = exports.parseDateStr = exports.coerceDate = exports.getMaxDate = exports.getMinDate = void 0;
+exports.getIsoDateString = exports.add = exports.getIsoWeek = exports.parseDateFormatStr = exports.formatDateStr = exports.parseDateStr = exports.coerceDate = exports.getMaxDate = exports.getMinDate = void 0;
 /**
  * DATES
  */
@@ -326,5 +326,11 @@ exports.add = function (date, qty, scale) {
         date.getMilliseconds() + (scale === "millisecond" ? qty : 0),
     ];
     return new Date(values[0], values[1], values[2], values[3], values[4], values[5], values[6]);
+};
+exports.getIsoDateString = function (value) {
+    value = new Date(value.getTime() - value.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split("T")[0];
+    return value;
 };
 //# sourceMappingURL=date_utils.js.map
