@@ -391,7 +391,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getStart());
                             if (pGanttChart.getEventsChange()["start"] &&
                                 typeof pGanttChart.getEventsChange()["start"] === "function") {
-                                e.target.value = newStartDate;
+                                e.target.value = date_utils_1.getIsoDateString(newStartDate);
                                 pGanttChart
                                     .getEventsChange()["start"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["start"]);
                             }
@@ -400,7 +400,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getEnd());
                             if (pGanttChart.getEventsChange()["end"] &&
                                 typeof pGanttChart.getEventsChange()["end"] === "function") {
-                                e.target.value = newEndDate;
+                                e.target.value = date_utils_1.getIsoDateString(newEndDate);
                                 pGanttChart
                                     .getEventsChange()["end"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["end"]);
                             }
@@ -416,7 +416,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getPlanStart());
                             if (pGanttChart.getEventsChange()["planstart"] &&
                                 typeof pGanttChart.getEventsChange()["planstart"] === "function") {
-                                e.target.value = newStartDate;
+                                e.target.value = date_utils_1.getIsoDateString(newStartDate);
                                 pGanttChart
                                     .getEventsChange()["planstart"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planstart"]);
                             }
@@ -425,7 +425,7 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getPlanEnd());
                             if (pGanttChart.getEventsChange()["planend"] &&
                                 typeof pGanttChart.getEventsChange()["planend"] === "function") {
-                                e.target.value = newEndDate;
+                                e.target.value = date_utils_1.getIsoDateString(newEndDate);
                                 pGanttChart
                                     .getEventsChange()["planend"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planend"]);
                             }
