@@ -111,10 +111,11 @@ exports.draw_header = function (column, i, vTmpRow, vTaskList, vEditable, vEvent
             var css = header.class ? header.class : "gadditional-" + key;
             var data = vTaskList[i].getDataObject();
             vTmpCell = draw_utils_1.newNode(vTmpRow, "td", null, "gadditional " + css);
-            vTmpDiv = draw_utils_1.newNode(vTmpCell, "div", null, null, data ? data[key] : "");
+            var text = draw_utils_1.makeInput(data ? data[key] : "", vEditable, "additional_" + key);
+            vTmpDiv = draw_utils_1.newNode(vTmpCell, "div", null, null, text);
             events_1.addListenerClickCell(vTmpCell, vEvents, vTaskList[i], "additional_" + key);
             // const callback = (task, e) => task.setCost(e.target.value);
-            // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'costdate');
+            events_1.addListenerInputCell(vTmpCell, vEventsChange, null, vTaskList, i, "additional_" + key);
         }
     }
     if ("vShowAddEntries" === column) {

@@ -235,13 +235,12 @@ export const draw_header = function (
             const css = header.class ? header.class : `gadditional-${key}`;
             const data = vTaskList[i].getDataObject();
             vTmpCell = newNode(vTmpRow, "td", null, `gadditional ${css}`);
-            vTmpDiv = newNode(
-                vTmpCell,
-                "div",
-                null,
-                null,
-                data ? data[key] : ""
+            const text = makeInput(
+                data ? data[key] : "",
+                vEditable,
+                `additional_${key}`
             );
+            vTmpDiv = newNode(vTmpCell, "div", null, null, text);
             addListenerClickCell(
                 vTmpCell,
                 vEvents,
@@ -249,7 +248,14 @@ export const draw_header = function (
                 `additional_${key}`
             );
             // const callback = (task, e) => task.setCost(e.target.value);
-            // addListenerInputCell(vTmpCell, vEventsChange, callback, vTaskList, i, 'costdate');
+            addListenerInputCell(
+                vTmpCell,
+                vEventsChange,
+                null,
+                vTaskList,
+                i,
+                `additional_${key}`
+            );
         }
     }
 
