@@ -1621,7 +1621,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getStart());
                             if (pGanttChart.getEventsChange()["start"] &&
                                 typeof pGanttChart.getEventsChange()["start"] === "function") {
-                                e.target.value = date_utils_1.getIsoDateString(newStartDate);
+                                e.target.value =
+                                    date_utils_1.getIsoDateString(newStartDate);
                                 pGanttChart
                                     .getEventsChange()["start"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["start"]);
                             }
@@ -1630,7 +1631,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getEnd());
                             if (pGanttChart.getEventsChange()["end"] &&
                                 typeof pGanttChart.getEventsChange()["end"] === "function") {
-                                e.target.value = date_utils_1.getIsoDateString(newEndDate);
+                                e.target.value =
+                                    date_utils_1.getIsoDateString(newEndDate);
                                 pGanttChart
                                     .getEventsChange()["end"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["end"]);
                             }
@@ -1646,7 +1648,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getPlanStart());
                             if (pGanttChart.getEventsChange()["planstart"] &&
                                 typeof pGanttChart.getEventsChange()["planstart"] === "function") {
-                                e.target.value = date_utils_1.getIsoDateString(newStartDate);
+                                e.target.value =
+                                    date_utils_1.getIsoDateString(newStartDate);
                                 pGanttChart
                                     .getEventsChange()["planstart"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planstart"]);
                             }
@@ -1655,7 +1658,8 @@ exports.addDragAndDropListeners = function (pGanttChart, pObj1) {
                             pGanttChart.setScrollTo(bar.getPlanEnd());
                             if (pGanttChart.getEventsChange()["planend"] &&
                                 typeof pGanttChart.getEventsChange()["planend"] === "function") {
-                                e.target.value = date_utils_1.getIsoDateString(newEndDate);
+                                e.target.value =
+                                    date_utils_1.getIsoDateString(newEndDate);
                                 pGanttChart
                                     .getEventsChange()["planend"](pGanttChart.getList(), bar, e, bar.getTaskDiv(), vColumnsNames["planend"]);
                             }
@@ -1762,7 +1766,10 @@ exports.addListenerInputCell = function (vTmpCell, vEventsChange, callback, task
                 }
                 if (vEventsChange[column] &&
                     typeof vEventsChange[column] === "function") {
-                    var q = vEventsChange[column](tasks, task, e, vTmpCell, vColumnsNames[column]);
+                    var isAdditional = column.includes("additional");
+                    var q = vEventsChange[column](tasks, task, e, vTmpCell, !isAdditional
+                        ? vColumnsNames[column]
+                        : vColumnsNames["dataObject"] + "." + column.replace("additional_"));
                     if (q && q.then) {
                         q.then(function (e) { return draw(); });
                     }
@@ -1827,6 +1834,7 @@ var vColumnsNames = {
     caption: "pCaption",
     note: "pNotes",
     removable: "pRemovable",
+    dataObject: "vDataObject",
 };
 
 },{"./task":10,"./utils/date_utils":11,"./utils/general_utils":13}],6:[function(require,module,exports){
