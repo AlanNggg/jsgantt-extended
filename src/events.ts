@@ -826,9 +826,7 @@ export const addListenerInputCell = function (
                             vTmpCell,
                             !isAdditional
                                 ? vColumnsNames[column]
-                                : `${
-                                      vColumnsNames["dataObject"]
-                                  }.${column.replace("additional_")}`
+                                : column.replace("additional_", "")
                         );
                         if (q && q.then) {
                             q.then((e) => draw());
@@ -900,5 +898,5 @@ const vColumnsNames = {
     caption: "pCaption",
     note: "pNotes",
     removable: "pRemovable",
-    dataObject: "vDataObject",
+    dataObject: "pDataObject",
 };

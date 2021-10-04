@@ -539,7 +539,7 @@ exports.addListenerInputCell = function (vTmpCell, vEventsChange, callback, task
                     var isAdditional = column.includes("additional");
                     var q = vEventsChange[column](tasks, task, e, vTmpCell, !isAdditional
                         ? vColumnsNames[column]
-                        : vColumnsNames["dataObject"] + "." + column.replace("additional_"));
+                        : column.replace("additional_", ""));
                     if (q && q.then) {
                         q.then(function (e) { return draw(); });
                     }
@@ -604,6 +604,6 @@ var vColumnsNames = {
     caption: "pCaption",
     note: "pNotes",
     removable: "pRemovable",
-    dataObject: "vDataObject",
+    dataObject: "pDataObject",
 };
 //# sourceMappingURL=events.js.map
